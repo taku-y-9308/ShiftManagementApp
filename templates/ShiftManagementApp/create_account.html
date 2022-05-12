@@ -1,0 +1,62 @@
+{% load static %}
+<!doctype html>
+<html lang="ja" >
+  <head>
+    <title>Login</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <link href="{% static 'ShiftManagementApp/signin.css' %}" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"> 
+  </head>
+<body>
+    <a id="skippy" class="sr-only sr-only-focusable" href="#content">
+  <div class="container">
+    <span class="skiplink-text">Skip to main content</span>
+  </div>
+    </a>
+
+    <form action="{% url 'ShiftManagementApp:create-newaccount'%}" method="post" class="form-signin">
+        {{form.errors}}
+        {% csrf_token %}
+
+        <div class="form-group">
+            <label for="email">メールアドレス</label>
+            {{form.email}}
+        </div>
+        <div class="form-group ">
+            <label for="last-name">フルネーム(スペースなし)</label>
+            {{form.username}}
+        </div>
+        <div class="form-group">
+            <label for="password">パスワード</label>
+            {{form.password1}}
+        </div>
+        <div class="form-group">
+            <label for="password2">パスワード(確認用)</label>
+            {{form.password2}}
+        </div>
+        <div class="form-group">
+            <label for="shop_id">ショップコード</label>
+            {{form.shop_id}}
+        </div>
+
+        <div class="form-group">
+            <label for="last-name">ポジション</label>
+            {{form.default_position}}
+        </div>
+        <div class="mt-3 text-center">
+            <a href="{%url 'ShiftManagementApp:Login'%}" class="mr-3"><<戻る</a>
+            <button type="submit" class="btn btn-primary btn-lg">登録</button>
+        </div>
+    </form>
+</body>
+    <script src="https://code.jquery.com/jquery-3.3 .1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script>
+  window.jQuery || document.write('<script src="{% static 'ShiftManagementApp/jquery-slim.min.js' %}"><\/script>')
+</script><script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js"></script><script src="/docs/4.3/assets/js/vendor/anchor.min.js"></script>
+<script src="/docs/4.3/assets/js/vendor/clipboard.min.js"></script>
+<script src="/docs/4.3/assets/js/vendor/bs-custom-file-input.min.js"></script>
+<script src="/docs/4.3/assets/js/src/application.js"></script>
+<script src="/docs/4.3/assets/js/src/search.js"></script>
+<script src="/docs/4.3/assets/js/src/ie-emulation-modes-warning.js"></script>
+</html>
+

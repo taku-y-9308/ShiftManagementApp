@@ -1,0 +1,28 @@
+{% extends "ShiftManagementApp/base.html" %}
+{% load static %}
+
+{% block title%}
+ShiftManagementApp
+{%endblock%}
+
+{% block contents%}
+<form action="{% url 'ShiftManagementApp:contact'%}" method="post">
+    {% csrf_token %}
+    {{form.errors}}
+    <div class="form-group"> 
+        {{form.user}}
+    </div>
+    <div class="form-group">
+        <label class="control-label">お問い合わせタイトル</label>
+        {{form.title}}
+    </div>
+    <div class="form-group">
+        <label class="control-label">お問い合わせ内容</label>
+        {{form.text}}
+    </div>
+    <button class="btn btn-danger" type="submit" id="submit-contact">送信</button>
+</form>
+<div class=".h5 text-left">
+    ＊送信するとユーザー情報も送信されます
+</div>
+{% endblock %}

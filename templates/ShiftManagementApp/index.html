@@ -1,0 +1,66 @@
+{% extends "ShiftManagementApp/base.html" %}
+{% load static %}
+
+{% block title %}
+ShiftManagementApp
+{% endblock %}
+
+{%block header%}
+<script src="{% static 'ShiftManagementApp/drawcalender.js'%}"></script>
+{%endblock%}
+
+{% block contents%}
+    <p class="h6 text-right">ログイン中:{{User.username}}さん</p>
+    <div class="container">
+      <div class="row mb-4">
+          <div class="col-6">
+              <button type="button" class="btn btn-primary mb-12" data-toggle="modal" data-target="#testModal">シフト提出</button>
+          </div>
+      </div>
+  </div>
+  
+  <div id='calendar'></div>     
+    <!-- モーダルの内容 -->
+    <div class="modal fade" id="testModal" tabindex="-1" role="dialog" aria-labelledby="basicModal" aria-hidden="true">
+      <div class="modal-dialog">
+          <div class="modal-content">
+              <div class="modal-header">
+                  <h4 class="modal-title" id="myModalLabel">シフト提出</h4>
+              </div>
+              <div class="modal-body">
+                  <label>シフト希望を入力してください</label>
+                  <form action="POST" id="form">
+                    <div class="form-group">
+                        <label class="control-label">シフトID</label>
+                        <input class="form-control" type="number" id="shift_id" readonly><!--readonlyで編集不可-->
+                      </div>
+                    <div class="form-group">
+                      <label class="control-label">ユーザーID</label>
+                      <input class="form-control" type="number" value={{User.id}} readonly><!--readonlyで編集不可-->
+                    </div>
+                    <div class="form-group">
+                      <label class="control-label">日付</label>
+                      <input class="form-control" type="date" id="date" readonly>
+                    </div>
+                    <div class="form-group">
+                      <label class="control-label">出勤</label>
+                      <input class="form-control" type="datetime-local" id="start">
+                    </div>
+                    <div class="form-group">
+                      <label class="control-label">退勤</label>
+                      <input class="form-control" type="datetime-local" id="end">
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-default" data-dismiss="modal">閉じる</button>
+                      <button type="button" class="btn btn-outline-danger" id="delete-shift">削除</button>
+                      <button type="button" class="btn btn-danger" type="submit" id="submit">決定</button>
+                  </div>
+
+                  </form>
+              </div>
+              </div>
+          </div>
+      </div>
+  </div>
+  {% endblock %}
+
