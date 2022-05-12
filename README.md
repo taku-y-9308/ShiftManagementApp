@@ -10,7 +10,7 @@ herokuデプロイ版です。
 - HTML/CSS
   
 **バックエンド**
-- Python 3.7.10
+- Python 3.9.11
 - Django 3.2.13
   
 **インフラ**
