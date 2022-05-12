@@ -1,7 +1,11 @@
 from pathlib import Path
-import environ
 import os
 import dj_database_url
+
+try:
+    from .local_settings import *
+except ImportError:
+    pass
 
 AUTH_USER_MODEL = 'ShiftManagementApp.User'
 
@@ -12,14 +16,16 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
-env = environ.Env()
-env.read_env(os.path.join(BASE_DIR, '.env'))
 SECRET_KEY = env('SECRET_KEY')
-DEBUG = env.get_value('DEBUG',cast=bool,default=False)
-#DEBUG = False
+DEBUG = False
 
-#ALLOWED_HOSTS = []
-ALLOWED_HOSTS = env.list('ALLOWED_HOSTS')
+if not DEBUG:
+    SECRET_KEY = os.environ['SECRET_KEY']
+    import django_heroku
+    django_heroku.settings(locals())
+
+
+ALLOWED_HOSTS = ['127.0.0.1', '.herokuapp.com']
 
 #Email settings
 #AWS_ACCESS_KEY_ID = ""
@@ -151,7 +157,3 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 db_from_env = dj_database_url.config(conn_max_age=600, ssl_require=True)
 DATABASES['default'].update(db_from_env)
-
-if not DEBUG:
-    import django_heroku
-    django_heroku.settings(locals())
