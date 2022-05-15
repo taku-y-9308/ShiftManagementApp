@@ -2,10 +2,7 @@ from pathlib import Path
 import os
 import dj_database_url
 
-try:
-    from .local_settings import *
-except ImportError:
-    pass
+
 
 AUTH_USER_MODEL = 'ShiftManagementApp.User'
 
@@ -153,6 +150,11 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 db_from_env = dj_database_url.config(conn_max_age=600, ssl_require=True)
 DATABASES['default'].update(db_from_env)
+try:
+    from .local_settings import *
+except ImportError:
+    pass
+
 if not DEBUG:
     SECRET_KEY = os.environ['SECRET_KEY']
     import django_heroku
