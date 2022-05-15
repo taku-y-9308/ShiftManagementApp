@@ -89,3 +89,9 @@ class Contact(models.Model):
     text = models.CharField("text",max_length=1000)
     def __str__(self):
         return str(self.title)
+
+class LINE_USER_ID(models.Model):
+    user_id = models.ForeignKey(User,on_delete=models.CASCADE,verbose_name="ユーザーID")
+    line_user_id = models.CharField("line_user_id",max_length=50)
+    def __int__(self):
+        return self.user_id
