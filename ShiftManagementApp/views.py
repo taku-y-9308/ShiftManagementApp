@@ -30,11 +30,8 @@ def Login(request):
         PASS = request.POST.get('password')
         try:
             next = request.POST.get('next')
-            print(next)
         except :
             next = None
-        print(f"next:{next}")
-        print(f"type:{type(next)}")
         user = authenticate(email=EMAIL, password=PASS)
 
         if user:
@@ -43,7 +40,6 @@ def Login(request):
                 if next == None:
                     return HttpResponseRedirect(reverse('ShiftManagementApp:index'))
                 else:
-                    print("test")
                     return HttpResponseRedirect(next)
 
             else:
