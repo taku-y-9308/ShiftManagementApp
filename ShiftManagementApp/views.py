@@ -1,7 +1,9 @@
 from asyncio import events
 from calendar import calendar
+from csv import excel_tab
 from curses import reset_prog_mode
 from email.policy import default
+from pickle import NONE
 from pickletools import read_unicodestring8
 from re import A, template
 from urllib import response
@@ -26,13 +28,24 @@ def Login(request):
     if request.method == 'POST':
         EMAIL = request.POST.get('email')
         PASS = request.POST.get('password')
-
+        try:
+            next = request.POST.get('next')
+            print(next)
+        except :
+            next = None
+        print(f"next:{next}")
+        print(f"type:{type(next)}")
         user = authenticate(email=EMAIL, password=PASS)
 
         if user:
             if user.is_active:
                 login(request,user)
-                return HttpResponseRedirect(reverse('ShiftManagementApp:index'))
+                if next == None:
+                    return HttpResponseRedirect(reverse('ShiftManagementApp:index'))
+                else:
+                    print("test")
+                    return HttpResponseRedirect(next)
+
             else:
                 return HttpResponse("アカウントが有効ではありません")
         else:
@@ -43,7 +56,11 @@ def Login(request):
             return render(request,'ShiftManagementApp/login.html',params)
     # リクエストがGETだった場合
     else:
-        return render(request, 'ShiftManagementApp/login.html')
+        next = request.GET.get('next')
+        params = {
+            "next":next
+        }
+        return render(request, 'ShiftManagementApp/login.html',params)
 #ログアウト
 @login_required
 def Logout(request):

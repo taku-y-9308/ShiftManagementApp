@@ -23,6 +23,9 @@
       <input type="email" id="inputEmail" class="form-control" placeholder="Email address" name="email" required autofocus>
       <label for="inputPassword" class="sr-only">Password</label>
       <input type="password" id="inputPassword" class="form-control" placeholder="Password" name = "password" required>
+      {%if next is not None%}
+      <input type="hidden"name="next" value="{{next}}">
+      {%endif%}
       <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
       <div class="mt-4">
         <a href="{%url 'ShiftManagementApp:create-newaccount'%}" class="link-primary">新規アカウント作成</a>
