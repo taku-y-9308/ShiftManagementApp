@@ -68,7 +68,9 @@ def Logout(request):
     
     return render(request, 'ShiftManagementApp/login.html')
 
+"""
 #新規アカウント作成
+"""
 def create_newaccount(request):
     if request.method == 'POST':
         form = SignUpForm(request.POST)
@@ -178,7 +180,10 @@ def contact(request):
 @login_required
 def contact_success(request):
     return render(request,'ShiftManagementApp/contact_success.html')
-#axiosの送信先
+
+"""
+シフトの送信先
+"""
 @login_required
 def submitshift(request):
     if request.method == 'GET':
@@ -215,18 +220,6 @@ def submitshift(request):
             'res_code':True,
             'shift_id':product.id
         })
-        '''
-        for event in events:
-        
-            response.append({
-                'id':event.id,
-                'date':event.date,
-                'start':event.begin,
-                'end':event.finish,
-
-            })
-            #print(response)
-        '''
         print("編集可能")
         return JsonResponse(response,safe=False)
 
