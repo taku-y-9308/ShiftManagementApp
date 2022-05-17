@@ -23,7 +23,9 @@ from django.views.decorators.csrf import ensure_csrf_cookie
 from django.http import Http404
 from django.core.mail import EmailMultiAlternatives
 
-#ログイン
+"""
+ログイン
+"""
 def Login(request):
     if request.method == 'POST':
         EMAIL = request.POST.get('email')
@@ -57,7 +59,9 @@ def Login(request):
             "next":next
         }
         return render(request, 'ShiftManagementApp/login.html',params)
-#ログアウト
+"""
+ログアウト
+"""
 @login_required
 def Logout(request):
     logout(request)
@@ -76,7 +80,9 @@ def create_newaccount(request):
         form = SignUpForm()
     return render(request,'ShiftManagementApp/create_account.html',{'form': form})
 
-#ホーム
+"""
+ホーム
+"""
 @login_required
 def home(request):
     arr2 = []
@@ -98,7 +104,9 @@ def home(request):
     }
     return render(request,'ShiftManagementApp/index.html',context=params)
 
-#お問い合わせフォーム
+"""
+お問い合わせフォーム
+"""
 @login_required
 def contact(request):
     if request.method == 'GET':
@@ -164,7 +172,9 @@ def contact(request):
         else:
             return render(request,"ShiftManagementApp/contact.html",{'form':form})
 
-#お問い合わせフォーム送信完了画面
+"""
+お問い合わせフォーム送信完了画面
+"""
 @login_required
 def contact_success(request):
     return render(request,'ShiftManagementApp/contact_success.html')
@@ -257,7 +267,7 @@ def Judge_editable(date_str):
         return False
 
 '''
-シフト編集画面のトップページ表示用
+シフト編集画面のトップページ表示
 '''
 @login_required
 def editshift(request):
@@ -411,12 +421,18 @@ def editshift_ajax_delete_shiftdata(request):
             })
         return JsonResponse(response,safe=False)
 
-#メール送信用
+"""
+メール送信用
+"""
 def send_email(subject,text_content,html_content,from_email,to_emails):
     msg = EmailMultiAlternatives(subject, text_content, from_email, [to_emails])
     msg.attach_alternative(html_content, "text/html")
     msg.send()
 
+
+"""
+LINEアカウント連携
+"""
 @login_required
 def account_linkage(request):
     linkToken = request.GET.get('linkToken')
@@ -431,6 +447,9 @@ def account_linkage(request):
 
     return  HttpResponseRedirect(f'https://access.line.me/dialog/bot/accountLink?linkToken={linkToken}&nonce={nonce}')
 
+"""
+パスワードリセット
+"""
 class PasswordReset(PasswordResetView):
     template_name = 'ShiftManagementApp/password_reset_form.html'
     success_url = reverse_lazy('ShiftManagementApp:password_reset_done')
