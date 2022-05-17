@@ -14,6 +14,7 @@ urlpatterns = [
     path('edit-shift-Ajax/',views.editshift_ajax,name='edit-shift-Ajax'),
     path('edit-shift-Ajax/post-shiftdata/',views.editshift_ajax_post_shiftdata,name='edit-shift-Ajax-post-shiftdata'),
     path('edit-shift-Ajax/delete-shiftdata/',views.editshift_ajax_delete_shiftdata,name='edit-shift-Ajax-delete-shiftdata'),
+    path('account_linkage/',views.account_linkage,name="account_linkage"),
     path('password_reset/', views.PasswordReset.as_view(), name='password_reset'), 
     path('password_reset/done/', views.PasswordResetDone.as_view(), name='password_reset_done'), 
     path('reset/<uidb64>/<token>/', views.PasswordResetConfirm.as_view(), name='password_reset_confirm'), 

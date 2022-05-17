@@ -1,3 +1,4 @@
+import json,datetime,secrets
 from asyncio import events
 from calendar import calendar
 from csv import excel_tab
@@ -9,7 +10,7 @@ from re import A, template
 from urllib import response
 from xmlrpc.client import boolean
 from django.views import generic
-from ShiftManagementApp.models import User,Shift
+from ShiftManagementApp.models import User,Shift,LINE_USER_ID
 from ShiftManagementApp.form import SubmitShift,SignUpForm,CreateAccount,ContactForm
 from django.urls import reverse,reverse_lazy
 from django.shortcuts import get_object_or_404, render,redirect
@@ -17,7 +18,6 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.views import PasswordChangeView, PasswordChangeDoneView, PasswordResetView, PasswordResetDoneView, PasswordResetConfirmView, PasswordResetCompleteView
 from django.http import HttpResponseRedirect, HttpResponse
 from django.contrib.auth.decorators import login_required
-import json,datetime
 from django.http.response import JsonResponse
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.http import Http404
@@ -416,6 +416,20 @@ def send_email(subject,text_content,html_content,from_email,to_emails):
     msg = EmailMultiAlternatives(subject, text_content, from_email, [to_emails])
     msg.attach_alternative(html_content, "text/html")
     msg.send()
+
+@login_required
+def account_linkage(request):
+    linkToken = request.GET.get('linkToken')
+    user_id = request.user.id
+    nonce = secrets.token_urlsafe(32)
+    LINE_USER_ID.objects.update_or_create(
+        user_id = user_id,
+        defaults = {
+            'nonce': nonce
+        }
+    )
+
+    return  HttpResponseRedirect(f'https://access.line.me/dialog/bot/accountLink?linkToken={linkToken}&nonce={nonce}')
 
 class PasswordReset(PasswordResetView):
     template_name = 'ShiftManagementApp/password_reset_form.html'
