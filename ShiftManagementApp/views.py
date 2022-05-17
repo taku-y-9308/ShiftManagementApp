@@ -422,6 +422,12 @@ def send_email(subject,text_content,html_content,from_email,to_emails):
     msg.attach_alternative(html_content, "text/html")
     msg.send()
 
+"""
+LINEアカウント連携表示用
+"""
+@login_required
+def line(request):
+    return render(request,'ShiftManagementApp/line.html')
 
 """
 LINEアカウント連携
