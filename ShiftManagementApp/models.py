@@ -91,7 +91,7 @@ class Contact(models.Model):
         return str(self.title)
 
 class LINE_USER_ID(models.Model):
-    user_id = models.ForeignKey(User,on_delete=models.CASCADE,verbose_name="ユーザーID")
+    user = models.ForeignKey(User,on_delete=models.CASCADE,verbose_name="ユーザーID")
     line_user_id = models.CharField("line_user_id",max_length=50)
     nonce = models.CharField("nonce",max_length=100,null=True)
     def __int__(self):

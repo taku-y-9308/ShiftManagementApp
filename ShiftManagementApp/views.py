@@ -423,7 +423,7 @@ def account_linkage(request):
     User = request.user
     nonce = secrets.token_urlsafe(32)
     LINE_USER_ID.objects.update_or_create(
-        user_id = User,
+        user = User, #Userインスタンス自身を渡す
         defaults = {
             'nonce': nonce
         }
