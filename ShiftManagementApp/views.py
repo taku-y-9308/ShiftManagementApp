@@ -420,10 +420,10 @@ def send_email(subject,text_content,html_content,from_email,to_emails):
 @login_required
 def account_linkage(request):
     linkToken = request.GET.get('linkToken')
-    user_id = request.user.id
+    User = request.user
     nonce = secrets.token_urlsafe(32)
     LINE_USER_ID.objects.update_or_create(
-        user_id = user_id,
+        user_id = User,
         defaults = {
             'nonce': nonce
         }
