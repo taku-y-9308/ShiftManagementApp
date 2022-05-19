@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', function draw_calender() {
       center: 'title',
       right: 'listMonth,dayGridMonth,timeGridWeek'
     },
-    navLinks: true, // can click day/week names to navigate views
+    navLinks: false, // can click day/week names to navigate views
     editable: true,
     selectable: true,
     eventBackgroundColor:'ff0000',
