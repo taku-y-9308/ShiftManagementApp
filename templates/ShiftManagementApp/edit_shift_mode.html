@@ -1,0 +1,44 @@
+{% extends "ShiftManagementApp/base.html" %}
+{% load static %}
+
+{% block title %}
+ShiftManagementApp
+{% endblock %}
+
+{%block header%}
+{%endblock%}
+
+{% block contents%}
+<form action="" method="post">
+{% csrf_token %}
+    <select class="form-select form-control" aria-label="Default select" name="user_id">
+        <option value="test">ユーザー名を選択</option>
+        {%for user in list_of_users %}
+        <option value={{user.id}}>{{user.username}}</option>
+        {%endfor%}
+    </select>
+    <button type="submit" class="btn btn-primary mt-4" data-dismiss="modal">ON/OFF切り替え</button>
+</form>
+<table class="table text-center mt-5">
+    <thead>
+      <tr>
+        <th scope="col">ユーザーID</th>
+        <th scope="col">ユーザー名</th>
+        <th scope="col">シフト編集モードON/OFF</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for user in list_of_users %}
+      <tr>    
+        <th scope="row">{{user.id}}</th>
+        <td>{{user.username}}</td>
+        {% if user.is_edit_mode%}
+        <td><b><span style="color:red">ON</b></td>
+        {% else %}
+        <td>OFF</td>
+        {%endif%}
+      </tr>
+    {%endfor%}
+    </tbody>
+  </table>
+{% endblock %}
