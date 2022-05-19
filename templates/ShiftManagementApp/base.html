@@ -39,8 +39,12 @@
                 <li class="nav-item">
                     <a class="nav-link" href="{%url 'ShiftManagementApp:index'%}">ホーム <span class="sr-only">(current)</span></a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{%url 'ShiftManagementApp:edit-shift'%}">シフト編集</a>
+                <li class="nav-item dropdown">
+                  <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">管理者メニュー</a>
+                  <div class="dropdown-menu">
+                    <a class="dropdown-item" href="{%url 'ShiftManagementApp:edit-shift'%}">シフト編集</a>
+                    <a class="dropdown-item" href="{% url 'ShiftManagementApp:edit-shift-mode'%}">シフト締め切り後編集モード</a>
+                  </div>
                 </li>
                 <li class="nav-item">
                   <a class="nav-link" href="{%url 'ShiftManagementApp:contact'%}">お問い合わせ</a>
