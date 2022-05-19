@@ -40,6 +40,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     username = models.CharField("username", max_length=50, validators=[username_validator])
     default_position = models.BooleanField("default_position")
     email = models.EmailField("email_address", unique=True)
+    is_edit_mode =models.BooleanField("is_edit_mode",default=False) #編集モード:シフト締め切り後などでも編集可能になるステータス
     is_staff = models.BooleanField("staff status", default=False) #スタッフユーザー（管理者）かどうか
     is_active = models.BooleanField("active", default=True) #退職したユーザーはFalse
     date_joined = models.DateTimeField("date joined", default=timezone.now) #アカウント作成日

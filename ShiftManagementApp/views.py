@@ -69,7 +69,7 @@ def Logout(request):
     return render(request, 'ShiftManagementApp/login.html')
 
 """
-#新規アカウント作成
+新規アカウント作成
 """
 def create_newaccount(request):
     if request.method == 'POST':
@@ -182,6 +182,36 @@ def contact_success(request):
     return render(request,'ShiftManagementApp/contact_success.html')
 
 """
+シフト締め切り後編集モードの設定画面
+"""
+@login_required
+def edit_shift_mode(request):
+    if request.user.is_staff:
+        if request.method == 'GET':
+            list_of_users = list(User.objects.filter(shop_id=request.user.shop_id))
+            params = {
+                'list_of_users':list_of_users
+            }
+            
+        else:
+            user_id = request.POST.get('user_id')
+            if user_id != 'test':
+                if User.objects.get(id=user_id).is_edit_mode:
+                    print(type(User.objects.get(id=user_id).is_edit_mode))
+                    User.objects.filter(id=user_id).update(is_edit_mode=False)
+                else:
+                    User.objects.filter(id=user_id).update(is_edit_mode=True)
+
+            list_of_users = list(User.objects.filter(shop_id=request.user.shop_id))
+            params = {
+                'list_of_users':list_of_users
+            }
+
+        return render(request,'ShiftManagementApp/edit_shift_mode.html',params)
+    else:
+        return HttpResponse('アクセス権がありません')
+
+"""
 シフトの送信先
 """
 @login_required
@@ -192,8 +222,11 @@ def submitshift(request):
     datas = json.loads(request.body)
     print(datas)
     print(request.user.id)
-    #送信された日付が現在編集可能な場合
-    if Judge_editable(datas['start']):
+    """
+    送信された日付が現在編集可能な場合
+    編集可能期間または編集モードのときにシフトを編集できる
+    """
+    if (Judge_editable(datas['start']) == True or request.user.is_edit_mode == True):
 
         '''
         ShiftのidをカレンダーのIDとして渡す
