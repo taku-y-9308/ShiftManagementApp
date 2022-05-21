@@ -312,6 +312,7 @@ def editshift(request):
         return HttpResponse('アクセス権がありません')
 
 '''
+【シフト編集画面】
 シフト編集画面の日付を入力したときの送信先
 シフト編集画面描画用のシフトデータをjsonで返す
 '''
@@ -362,6 +363,7 @@ def editshift_ajax(request):
 
 
 '''
+【シフト編集画面】
 シフトデータを新規追加or編集したときの送信先
 '''
 @login_required
@@ -435,7 +437,7 @@ def editshift_ajax_delete_shiftdata(request):
     #削除リクエストが一般ユーザーの場合、編集可能期間かどうかで可否を変える
     else:
         #編集可能期間かどうか判定
-        if Judge_editable(datas['start']):
+        if (Judge_editable(datas['start']) == True or request.user.is_edit_mode == True):
             #getは対象が存在しないと例外を返すため念の為try文にしている
             try:
                 Shift.objects.get(id=datas['id']).delete()
