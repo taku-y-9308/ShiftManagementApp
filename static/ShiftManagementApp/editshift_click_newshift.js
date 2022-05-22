@@ -12,13 +12,13 @@ $(document).on('click','#create-newshift',function () {
                 "member":Number(member),
                 "position":($('#position').val()),
                 "date":$('#submit-newshift-date').val(),
-                "start":$('#submit-newshift-start').val(),
-                "end":$('#submit-newshift-end').val()
+                "start":$('#submit-newshift-date').val()+"T"+$('#submit-newshift-start').val(),
+                "end":$('#submit-newshift-date').val()+"T"+$('#submit-newshift-end').val()
             })
             .then((res)=>{
                 //alert('送信成功');
+                console.log($('#submit-newshift-date').val()+"T"+$('#submit-newshift-start').val())
                 $('#submit-newshift-modal').modal('hide');//modalを閉じる
-                
             })
             .catch(()=>{
                 alert('送信失敗しました');
