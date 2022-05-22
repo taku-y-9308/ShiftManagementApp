@@ -1,4 +1,4 @@
-$(document).on('click','#submit-date',function show_shift() {
+$(document).on('click','#submit-date',function show_timeline() {
             
     axios.defaults.xsrfHeaderName = "X-CSRFTOKEN"
     axios.defaults.xsrfCookieName = "csrftoken"
@@ -24,13 +24,13 @@ $(document).on('click','#submit-date',function show_shift() {
                     dataTable.addColumn({ type: 'date', id: 'start' });
                     dataTable.addColumn({ type: 'date', id: 'end' });
                     /*barlabelの場所（カラム２）は何も入れなくても存在してないとうまく動かない*/
+                    console.log(res.data)
                     for (let i=0;i<res.data.length;i++){
                         let name = res.data[i]['name'];
                         let shift_id = String(res.data[i]['shift_id']);
                         let style = res.data[i]['style'];
                         let start = res.data[i]['start'];
                         let end = res.data[i]['end'];
-                        
                         dataTable.addRows([
                             [name,shift_id,style,new Date(start),new Date(end)]
                         ]);
@@ -57,8 +57,8 @@ $(document).on('click','#submit-date',function show_shift() {
 
                         const shift_id_modal = dataTable['Wf'][row]['c']['1']['v'];
                         const date_modal = moment(dataTable['Wf'][row]['c']['3']['v']).format('YYYY-MM-DD');
-                        const start_modal = moment(dataTable['Wf'][row]['c']['3']['v']).format('YYYY-MM-DDTHH:mm');
-                        const end_modal = moment(dataTable['Wf'][row]['c']['4']['v']).format('YYYY-MM-DDTHH:mm');
+                        const start_modal = moment(dataTable['Wf'][row]['c']['3']['v']).format('HH:mm');
+                        const end_modal = moment(dataTable['Wf'][row]['c']['4']['v']).format('HH:mm');
                         console.log(typeof(dataTable['Wf'][row]['c']['2']['v'])); 
                         let position;
                         if (dataTable['Wf'][row]['c']['2']['v'] == '#0000ff'){//blue
@@ -85,13 +85,13 @@ $(document).on('click','#submit-date',function show_shift() {
                                     "member":null,
                                     "position":($('#position').val()),
                                     "date":$('#edit-date').val(),
-                                    "start":$('#start').val(),
-                                    "end":$('#end').val()
+                                    "start":$('#edit-date').val()+"T"+$('#start').val(),
+                                    "end":$('#edit-date').val()+"T"+$('#end').val()
                                 })
                                 .then((res)=>{
                                     //alert('送信成功');
                                     $('#testModal').modal('hide');//modalを閉じる
-                                    show_shift();//シフト表再描画させる
+                                    show_timeline();//シフト表再描画させる
                                 })
                                 .catch((error)=>{
                                     alert('送信失敗しました');
@@ -111,7 +111,7 @@ $(document).on('click','#submit-date',function show_shift() {
                                 .then((res)=>{
                                     //alert('送信成功');
                                     $('#testModal').modal('hide');//modalを閉じる
-                                    show_shift();//シフト表再描画させる
+                                    show_timeline();//シフト表再描画させる
                                 })
                                 .catch(()=>{
                                     alert('送信失敗しました');
