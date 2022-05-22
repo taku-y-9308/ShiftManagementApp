@@ -15,4 +15,6 @@ https://shiftmanagementapp-heroku.herokuapp.com/
 - Django 3.2.13
   
 **インフラ**
-- Heroku
+- heroku
+
+![heroku-構成図 drawio](https://user-images.githubusercontent.com/66234583/169697910-2acd5d71-23ff-4a60-adc1-664862234c43.svg)
