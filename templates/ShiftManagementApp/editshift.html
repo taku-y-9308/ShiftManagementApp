@@ -13,6 +13,8 @@ ShiftManagementApp
     <script src="{%static 'ShiftManagementApp/editshift_click_submit.js'%}"></script>
     <!--「新規シフト作成」をクリックした時の動作-->
     <script src="{% static 'ShiftManagementApp/editshift_click_newshift.js'%}"></script>
+    <!-- シフト公開ボタンをクリックした時の動作 -->
+    <script src="{% static 'ShiftManagementApp/publish_shift.js' %}"></script>
 {%endblock%}
 
 {%block contents%}
@@ -22,7 +24,10 @@ ShiftManagementApp
             <input type="date" class="form-control"  placeholder="タップして日付を入力" id="edit-date">
         </div>
         <button type="button" class="btn btn-primary mr-3" id="submit-date">送信</button>
-        <button type="button" class="btn btn-secondary" id="create-newshift">新規シフト作成</button>
+        {% if user.is_staff %}
+        <button type="button" class="btn btn-secondary mr-3" id="create-newshift">新規シフト作成</button>
+        <button type="button" class="btn btn-danger" id="open_publish_shift_modal">シフト公開</button>
+        {%endif%}
     </div>
 </div>
 <div id="timeline" class="mt-4" style="height: 1000px;"></div>
@@ -33,10 +38,18 @@ ShiftManagementApp
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h4 class="modal-title" id="myModalLabel">シフト編集</h4>
+                <h4 class="modal-title" id="myModalLabel">
+                    {% if user.is_staff %}
+                    シフト編集
+                    {% else %}
+                    シフト閲覧
+                    {%endif%}
+                </h4>
             </div>
             <div class="modal-body">
+                {% if user.is_staff %}
                 <label>シフト希望を入力してください</label>
+                {%endif%}
                 <form action="" id="form">
                     <div class="form-group">
                         <label class="control-label">シフトID</label>
@@ -48,31 +61,33 @@ ShiftManagementApp
                     </div>
                     <div class="form-group">
                     <label class="control-label">ポジション</label><br>
-                    <select class="form-control" name="position" id="position">
+                    <select class="form-control" name="position" id="position" {% if not user.is_staff %} disabled {%endif%}>
                         <option value="False">キッチン</option>
                         <option value="True">ホール</option>
                     </select>
                     </div>
                     <div class="form-group">
                     <label class="control-label">出勤</label>
-                    <input class="form-control" type="time" id="start">
+                    <input class="form-control" type="time" id="start" {%if not user.is_staff%} readonly {%endif%}>
                     </div>
                     <div class="form-group">
                     <label class="control-label">退勤</label>
-                    <input class="form-control" type="time" id="end">
+                    <input class="form-control" type="time" id="end" {%if not user.is_staff%} readonly {%endif%}>
                     </div>
                     <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">閉じる</button>
+                    {% if user.is_staff %}
                     <button type="button" class="btn btn-outline-danger" id="delete-shift">削除</button>
                     <button type="button" class="btn btn-danger" type="submit" id="submit-shift">決定</button>
+                    {%endif%}
 
                 </div>
 
                 </form>
             </div>
-            </div>
         </div>
     </div>
+</div>
 
 <!-- 新規シフト作成ボタンをクリックした時に表示するモーダルの内容 -->
 <div class="modal fade" id="submit-newshift-modal" tabindex="-1" role="dialog" aria-labelledby="basicModal" aria-hidden="true">
@@ -118,8 +133,38 @@ ShiftManagementApp
 
                 </form>
             </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- シフト公開ボタンをクリックした時に表示するモーダルの内容 -->
+<div class="modal fade" id="publish_shift" tabindex="-1" role="dialog" aria-labelledby="basicModal" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="myModalLabel">シフト公開設定</h4>
+            </div>
+            <div class="modal-body">
+                <label>公開する範囲を入力してください</label>
+                <form action="" id="form">
+                    <div class="form-group">
+                        <label class="control-label">start</label>
+                        <input class="form-control" type="date" id="publish_shift_start">
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label">end</label>
+                        <input class="form-control" type="date" id="publish_shift_end">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">閉じる</button>
+                        <button type="button" class="btn btn-danger" type="submit" id="submit_publish_shift">決定</button>
+                    </div>
+
+                </form>
             </div>
         </div>
     </div>
+</div>
 
 {%endblock%}

@@ -1,14 +1,15 @@
-import json,datetime,secrets
+import json,datetime,secrets,calendar
 from asyncio import events
-from calendar import calendar
 from curses import reset_prog_mode
 from email.policy import default
 from pickletools import read_unicodestring8
 from re import A, template
+from this import d
+from tracemalloc import start
 from urllib import response
 from xmlrpc.client import boolean
 from django.views import generic
-from ShiftManagementApp.models import User,Shift,LINE_USER_ID
+from ShiftManagementApp.models import User,Shift,LINE_USER_ID,Publish_range
 from ShiftManagementApp.form import SubmitShift,SignUpForm,CreateAccount,ContactForm
 from django.urls import reverse,reverse_lazy
 from django.shortcuts import get_object_or_404, render,redirect
@@ -99,11 +100,117 @@ def home(request):
 		    'editable': 'true'
         }
         arr2.append(arr)
+    
+    #カレンダーの表示範囲を公開設定されている範囲のみ表示する
+    t_delta = datetime.timedelta(hours=9)
+    JST = datetime.timezone(t_delta, 'JST')
+    now_JST = datetime.datetime.now(JST)
+    now_JST_str = now_JST.strftime('%Y-%m-%dT%H:%M') #YYYY-MM-ddTHH:mm形式の文字列に変換
+
+    start_date = get_first_date(now_JST,-1)
+    try:
+        end_date = Publish_range.objects.get(id=1).Publish_shift_end
+    except:
+        end_date = get_last_date(now_JST,1)
+
     params = {
         'shift':arr2,
-        'User':request.user
+        'User':request.user,
+        'start_date':start_date.strftime('%Y-%m-%d'),
+        'end_date':end_date.strftime('%Y-%m-%d')
     }
     return render(request,'ShiftManagementApp/index.html',context=params)
+
+"""
+シフト提出画面
+"""
+@login_required
+def submit_shift(request):
+    arr2 = []
+    shifts = Shift.objects.filter(user=request.user.id)
+    for shift in shifts:
+        arr = {
+            'id':shift.id,
+            'titie':'TEST',
+            'start':shift.begin,
+            'end':shift.finish,
+            'backgroundColor': "red",
+		    'borderColor': "red",
+		    'editable': 'true'
+        }
+        arr2.append(arr)
+
+    #カレンダーの表示範囲を設定
+    t_delta = datetime.timedelta(hours=9)
+    JST = datetime.timezone(t_delta, 'JST')
+    now_JST = datetime.datetime.now(JST)
+
+    #編集モードがTrueのユーザーは今月と来月を表示
+    if request.user.is_edit_mode:
+        start_date = get_first_date(now_JST,0)
+        end_date = get_last_date(now_JST,1)
+    #それ以外のユーザーは来月のみ表示
+    else:
+        start_date = get_first_date(now_JST,1)
+        end_date = get_last_date(now_JST,1)     
+    params = {
+        'shift':arr2,
+        'User':request.user,
+        'start_date':start_date.strftime('%Y-%m-%d'),
+        'end_date':end_date.strftime('%Y-%m-%d')
+    }
+    return render(request,'ShiftManagementApp/submit_shift.html',context=params)
+
+"""
+指定した月の月初めdatetimeオブジェクトを返す
+引数
+dt:
+date,datetimeオブジェクト
+
+target_month:
+defalut=0
+-1:前月
+0:当月
+1:来月
+
+返り値:指定のtargetmonthの月初めdatetimeオブジェクト
+"""
+
+def get_first_date(dt,target_month=0):
+    if not -1 <= target_month <= 1:
+        raise ValueError("target_monthは-1~1の範囲である必要があります")
+
+    if dt.month+target_month < 1:
+        return dt.replace(year=dt.year-1,month=12,day=1)
+    elif dt.month+target_month > 12:
+        return dt.replace(year=dt.year+1,month=1,day=1)
+    else:
+        return dt.replace(month=dt.month+target_month,day=1)
+
+"""
+指定した月の月末datetimeオブジェクトを返す
+引数
+dt:
+date,datetimeオブジェクト
+
+target_month:
+defalut=0
+-1:前月
+0:当月
+1:来月
+
+返り値:指定のtargetmonthの月末datetimeオブジェクト
+"""
+def get_last_date(dt,target_month=0):
+    if not -1 <= target_month <= 1:
+        raise ValueError("target_monthは-1~1の範囲である必要があります")
+
+    if dt.month+target_month < 1:
+        return dt.replace(month=12,day=calendar.monthrange(dt.year-1,12)[1])
+    elif dt.month+target_month > 12:
+        return dt.replace(month=1,day=calendar.monthrange(dt.year+1,1)[1])
+    else:
+        return dt.replace(month=dt.month+target_month,day=calendar.monthrange(dt.year,dt.month+target_month)[1])
 
 """
 お問い合わせフォーム
@@ -302,18 +409,14 @@ def Judge_editable(date_str):
 @login_required
 def editshift(request):
 
-    #スタッフユーザー(管理ユーザー)のみ実行可 
-    if request.user.is_staff:
-        members = User.objects.filter(shop_id=request.user.shop_id)
+    members = User.objects.filter(shop_id=request.user.shop_id)
+    user = request.user
+    params = {
+        'members':members,
+        'User':user
+    }
+    return render(request,'ShiftManagementApp/editshift.html',params)
 
-        params = {
-            'members':members
-        }
-        return render(request,'ShiftManagementApp/editshift.html',params)
-    
-    #staffユーザーではない場合
-    else:
-        return HttpResponse('アクセス権がありません')
 
 '''
 【シフト編集画面】
@@ -322,50 +425,48 @@ def editshift(request):
 '''
 @login_required
 def editshift_ajax(request):
+    #GETリクエストなら404を返す
+    if request.method == 'GET':
+        raise Http404()
 
-    #スタッフユーザー(管理ユーザー)のみ実行可 
+    json_data = json.loads(request.body)
+    date = json_data['date']
+    print(json_data)
+
+    arr2 = []
+    
+    #該当のシフトを取得(User.idの昇順で並び替える),管理者かそうでないかで取得するシフトを変える
     if request.user.is_staff:
-        print(request.user.is_staff)
-
-        #GETリクエストなら404を返す
-        if request.method == 'GET':
-            raise Http404()
-
-        json_data = json.loads(request.body)
-        date = json_data['date']
-        print(json_data)
-
-        arr2 = []
-        #該当のシフトを取得(User.idの昇順で並び替える)
         shifts = Shift.objects.select_related('user').filter(date=date).order_by('user__id')
-        
-        for shift in shifts:
-            #管理ユーザーと同じshop_idのシフトのみ表示（他店のシフトは表示しない）
-            if shift.user.shop_id == request.user.shop_id:
-                name = User.objects.get(id=shift.user.id).username
-                print(name)
-                #positionによってバーに適用する色を変える
-                position = shift.position
-                if position == True:
-                    style = '#0000ff' #blue
-                else:
-                    style = '#ff0000' #red
-                arr = {
-                    'shift_id':shift.id,
-                    'name':name,
-                    'date':shift.date,
-                    'style':style,
-                    'start':shift.begin,
-                    'end':shift.finish,
-                }
-                arr2.append(arr)
-        return JsonResponse(arr2,safe=False)
-    #staffユーザーではない場合
     else:
-        return HttpResponse('アクセス権がありません')
+        shifts = Shift.objects.select_related('user').filter(date=date,publish=True).order_by('user__id')
+    
+    for shift in shifts:
+        #管理ユーザーと同じshop_idのシフトのみ表示（他店のシフトは表示しない）
+        if shift.user.shop_id == request.user.shop_id:
+            name = User.objects.get(id=shift.user.id).username
+            print(name)
+            #positionによってバーに適用する色を変える
+            position = shift.position
+            if position == True:
+                style = '#0000ff' #blue
+            else:
+                style = '#ff0000' #red
+            arr = {
+                'shift_id':shift.id,
+                'name':name,
+                'date':shift.date,
+                'style':style,
+                'start':shift.begin,
+                'end':shift.finish,
+            }
+            arr2.append(arr)
+    return JsonResponse(arr2,safe=False)
+
 
 
 '''
+【管理者のみ】
 【シフト編集画面】
 シフトデータを新規追加or編集したときの送信先
 '''
@@ -443,8 +544,7 @@ def editshift_ajax_delete_shiftdata(request):
         削除リクエストの判定
         編集可能期間もしくは、編集モードの時に削除リクエストを受け付ける
         """
-        start = datas['date']+"T"+datas['start']
-        if (Judge_editable(start) == True or request.user.is_edit_mode == True):
+        if (Judge_editable(datas['start']) == True or request.user.is_edit_mode == True):
             #getは対象が存在しないと例外を返すため念の為try文にしている
             try:
                 Shift.objects.get(id=datas['id']).delete()
@@ -458,6 +558,35 @@ def editshift_ajax_delete_shiftdata(request):
                 'res_code':False
             })
         return JsonResponse(response,safe=False)
+
+"""
+シフトの公開設定
+"""
+@login_required
+def edit_shift_publish_shift(request):
+    if request.method == 'GET':
+        raise Http404()
+    if request.user.is_staff:
+        publish_range = json.loads(request.body)
+        publish_start = publish_range['publish_shift_start']
+
+        #タイムゾーンの関係でカレンダーのendが１日少なく表示されてしまうため+1する
+        publish_end = datetime.datetime.strptime( publish_range['publish_shift_end'],'%Y-%m-%d') + datetime.timedelta(days=1)
+
+        #公開範囲のShiftのpublishをTrueにする
+        Shift.objects.filter(date__gte=publish_start,date__lte=publish_end).update(publish=True)
+
+        Publish_range.objects.update_or_create(
+            id=1,
+            defaults={
+                'Publish_shift_start':publish_start,
+                'Publish_shift_end':publish_end
+
+            }
+        )
+    response = {}
+    return JsonResponse(response)
+    
 """
 メール送信用
 """

@@ -40,7 +40,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     username = models.CharField("username", max_length=50, validators=[username_validator])
     default_position = models.BooleanField("default_position")
     email = models.EmailField("email_address", unique=True)
-    is_edit_mode =models.BooleanField("is_edit_mode",default=False) #編集モード:シフト締め切り後などでも編集可能になるステータス
+    is_edit_mode =models.BooleanField("is_edit_mode",default=False) #編集モード:編集可能かどうかのステータス
     is_staff = models.BooleanField("staff status", default=False) #スタッフユーザー（管理者）かどうか
     is_active = models.BooleanField("active", default=True) #退職したユーザーはFalse
     date_joined = models.DateTimeField("date joined", default=timezone.now) #アカウント作成日
@@ -73,6 +73,7 @@ class Shift(models.Model):
     begin = models.DateTimeField("begin")
     finish = models.DateTimeField("finish")
     position = models.BooleanField("position")
+    publish = models.BooleanField("publish",default=True)
     def __str__(self):
         return str(self.date)
 
@@ -97,3 +98,9 @@ class LINE_USER_ID(models.Model):
     nonce = models.CharField("nonce",max_length=100,null=True)
     def __int__(self):
         return self.user_id
+
+class Publish_range(models.Model):
+    Publish_shift_start = models.DateField("Publish_shift_start")
+    Publish_shift_end = models.DateField("Publish_shift_end")
+    def __str__(self):
+        return f"{self.Publish_shift_start}~{self.Publish_shift_end}"
