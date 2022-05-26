@@ -6,11 +6,10 @@ ShiftManagementApp
 {% endblock %}
 
 {%block header%}
-<script src="{% static 'ShiftManagementApp/drawcalender.js'%}"></script>
+<script src="{% static 'ShiftManagementApp/draw_submit_shift_calendar.js'%}"></script>
 {%endblock%}
 
 {% block contents%}
-    <p class="h6 text-right">ログイン中:{{User.username}}さん</p>
   
   <div id='calendar'></div>     
     <!-- モーダルの内容 -->
