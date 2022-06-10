@@ -29,9 +29,12 @@ AWS_SES_REGION_NAME="ap-northeast-1"
 
 AWS_SES_REGION_ENDPOINT="email.ap-northeast-1.amazonaws.com"
 
-EMAIL_BACKEND="django_ses.SESBackend"
+#EMAIL_BACKEND="django_ses.SESBackend"
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 DEFAULT_FROM_EMAIL = 'no-reply@shiftmanagementapp.com'
-
+EMAIL_HOST = 'smtp.sendgrid.net'
+EMAIL_HOST_USER = 'apikey'
+EMAIL_HOST_PASSWORD = os.environ['EMAIL_HOST_PASSWORD']
 
 # Application definition
 
