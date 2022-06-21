@@ -10,7 +10,6 @@ function get_holidays_list(holidays_list){
             end: holidays[i]+"T00:00:00Z",
             allDay: true,
             editable: false,
-            backgroundColor:
 
         }
         eventDates.push(holiday)
