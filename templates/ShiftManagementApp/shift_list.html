@@ -1,0 +1,46 @@
+{% extends "ShiftManagementApp/base.html" %}
+{% load static %}
+
+{% block title %}
+ShiftManagementApp
+{% endblock %}
+
+{%block header%}
+<script src="{% static 'ShiftManagementApp/view_shift_list.js'%}"></script>
+{%endblock%}
+
+{% block contents%}
+
+<table class="table table-bordered table-striped" id="data-table">
+    <thead>
+        <tr>
+          <th scope="col">#</th>
+          <th scope="col">7/1</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th scope="row">takumi</th>
+          <td>12:00~22:00</td>
+          <td>12:00~22:00</td>
+          <td>12:00~22:00</td>
+          <td>12:00~22:00</td>
+        </tr>
+        <tr>
+            <th scope="row">testuser1</th>
+            <td>12:00~22:00</td>
+            <td>12:00~22:00</td>
+            <td>12:00~22:00</td>
+            <td>12:00~22:00</td>
+          </tr>
+      </tbody>
+      
+      <thead>
+          <tr id="shift_list_date">
+              <th scope="col">#</th>
+          </tr>
+      </thead>
+      <tbody id="tbody"></tbody>
+</table>
+
+{% endblock %}

@@ -586,7 +586,50 @@ def edit_shift_publish_shift(request):
         )
     response = {}
     return JsonResponse(response)
+
+"""
+シフト一覧表表示用
+"""
+def shift_list(request):
+    shift_list = list(Shift.objects.filter(date__gte='2022-07-01',date__lte='2022-07-31'))
+    params= {
+        'shift_list': shift_list
+    }
+    return render(request,'ShiftManagementApp/shift_list.html',params)
+
+"""
+特定期間、かつ同じshop_idのシフトをすべてJSONで返す
+"""
+def shift_list_ajax(request):
+    shift_list_json = {} #全体のシフトが格納されたjson
+    arr2 = []
+
+    users= User.objects.filter(shop_id=request.user.shop_id)
+
+    #すべてのユーザーのシフトをshift_list_jsonに格納する
+    for user in users:
+        shift_list_individual = {} #個人ごとのシフトリストを格納
+        arr = []
+        
+        shifts = list(Shift.objects.filter(user=user))
+
+        shift_list_individual['username'] = user.username
+
+        #特定個人のシフトをすべてshift_list_indivisualに格納する
+        for shift in shifts:
+            arr.append({
+                "id": shift.id,
+                "date": shift.date.isoformat(),
+                "start": shift.begin.isoformat(),
+                "end": shift.finish.isoformat()   
+            })
+        shift_list_individual['shift_list'] = arr
+        arr2.append(shift_list_individual)
+
     
+    shift_list_json['shift_lists'] = arr2
+    print(json.dumps(shift_list_json))
+    return JsonResponse({'':''})
 """
 メール送信用
 """
