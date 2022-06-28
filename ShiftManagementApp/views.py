@@ -611,7 +611,7 @@ def shift_list_ajax(request):
         shift_list_individual = {} #個人ごとのシフトリストを格納
         arr = []
         
-        shifts = list(Shift.objects.filter(user=user))
+        shifts = list(Shift.objects.filter(user=user,date__gte='2022-07-01',date__lte='2022-07-31'))
 
         shift_list_individual['username'] = user.username
 
@@ -628,8 +628,8 @@ def shift_list_ajax(request):
 
     
     shift_list_json['shift_lists'] = arr2
-    print(json.dumps(shift_list_json))
-    return JsonResponse({'':''})
+
+    return JsonResponse(shift_list_json)
 """
 メール送信用
 """
