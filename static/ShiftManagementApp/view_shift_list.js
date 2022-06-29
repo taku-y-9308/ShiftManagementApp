@@ -5,18 +5,22 @@ window.onload = function(){
         .get('/shift-list-ajax/')
         .then((res)=>{
             console.log(res);
-            const end_date = new Date(2022,6,30);
+            const end_date = new Date(2022,6,31);
             let shift_list_date = document.getElementById('shift_list_date');
-            
-
-            let tableEle = document.getElementById('data-table')
-            for(let i=1;i<=end_date.getDate();i++){
+            const dt = new Date(2022,6,1)
+            const dt_last_date = new Date(dt.getFullYear(),dt.getMonth()+1,0);
+            //console.log(dt_last_date)
+            for(let i=1;i<=dt_last_date.getDate();i++){
                 let th = document.createElement('th');
-                th.innerHTML = '2022/6/'+i;
+                dt_month = dt.getMonth();
+                dt_date = dt.getDate();
+                th.innerHTML = dt_month + "/" + dt_date;
                 shift_list_date.appendChild(th);
+                dt.setDate(dt.getDate()+1);
             }
+            //console.log(end_date.getDate());
+            //tableEle.appendChild(shift_list_date);
             tbody = document.getElementById('tbody')
-            tableEle.appendChild(shift_list_date);
 
             /**個人ごとにループを回す */
             for(let i=0;i<res.data.shift_lists.length;i++){
@@ -31,18 +35,20 @@ window.onload = function(){
                 tr.appendChild(th)
 
                 let count = 0;
+                let break_counter = 0;
 
-                console.log(start_date);
-                
+                //console.log(start_date);
                 //dt = new Date(res.data.shift_lists[i].shift_list[j].date)
                 //console.log(dt)
-                while(search_date.getDate()<=end_date.getDate()){
+                while(search_date.getDate()<=dt_last_date.getDate()){
                     let td = document.createElement('td'); //毎回定義しないと同じエレメントに上書きされる
                     //console.log(new Date(res.data.shift_lists[i].shift_list[count].date));
-                    console.log("search_date:"+search_date);
+                    //console.log("search_date:"+search_date);
+                    console.log(search_date.getDate());
+                    console.log(end_date.getDate());
 
                     if(count == res.data.shift_lists[i].shift_list.length){
-                        td.innerHTML = "test"
+                        td.innerHTML = ""
                     }
                     else if(new Date(res.data.shift_lists[i].shift_list[count].date).getTime() == search_date.getTime()){
                         start_date_object = new Date(res.data.shift_lists[i].shift_list[count].start);
@@ -64,27 +70,22 @@ window.onload = function(){
                         count++;
                     }
                     else{
-                        td.innerHTML = "test";
+                        td.innerHTML = "";
 
                     }
-                    console.log(count);
+
+                    /**日付が並んでいないか判定
+                     * 日付なので、同じ月でsearch_date.getDate()>dt_last_date.getDate()となることはないため
+                     * 無限ループになるのを防ぐ*/
+                    if(search_date.getDate() == dt_last_date.getDate()){
+                        fragment.appendChild(td);
+                        break;
+                    }
+
+                    //console.log(count);
                     fragment.appendChild(td);
                     search_date.setDate(search_date.getDate()+1);
                 }
-
-                
-                /*
-                if(search_date == res.data.shift_lists[i].shift_list[j]){
-
-                }
-                */
-                /**
-                 * 1日か月末まで回して、shift_listにその日付が存在したら
-                 * <td>12:00~18:00</td>
-                 * 存在しなければ
-                 *<td></td>を代入したい
-                    */
-                
 
                 tr.appendChild(fragment);
                 console.log(tr);
