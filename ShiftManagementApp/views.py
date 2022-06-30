@@ -1,4 +1,5 @@
 import json,datetime,secrets,calendar
+import re
 from asyncio import events
 from curses import reset_prog_mode
 from email.policy import default
@@ -591,9 +592,14 @@ def edit_shift_publish_shift(request):
 シフト一覧表表示用
 """
 def shift_list(request):
-    shift_list = list(Shift.objects.filter(date__gte='2022-07-01',date__lte='2022-07-31'))
+    now = datetime.datetime.now()
+    last_month = datetime.datetime(now.year,now.month-2,1)
+    this_month = datetime.datetime(now.year,now.month-1,1)
+    next_month = datetime.datetime(now.year,now.month,1)
     params= {
-        'shift_list': shift_list
+        'last_month': last_month.strftime('%Y-%m'),
+        'this_month': this_month.strftime('%Y-%m'),
+        'next_month': next_month.strftime('%Y-%m')
     }
     return render(request,'ShiftManagementApp/shift_list.html',params)
 
@@ -601,35 +607,46 @@ def shift_list(request):
 特定期間、かつ同じshop_idのシフトをすべてJSONで返す
 """
 def shift_list_ajax(request):
-    shift_list_json = {} #全体のシフトが格納されたjson
-    arr2 = []
+    json_total_shift_stored = {} #全体のシフトが格納されたjson
+    tmp_arr2 = []
+
+    res_json = json.loads(request.body)
+
+    dt = datetime.datetime.strptime(res_json["selected_month"],'%Y-%m')
+    selected_month_beginning = dt
+    selected_month_end = datetime.date(dt.year,dt.month+1,1) - datetime.timedelta(days=1)
+
+    selected_month_beginning_str = selected_month_beginning.strftime('%Y-%m-%d')
+    selected_month_end_str = selected_month_end.strftime('%Y-%m-%d')
+
 
     users= User.objects.filter(shop_id=request.user.shop_id)
 
-    #すべてのユーザーのシフトをshift_list_jsonに格納する
+    #すべてのユーザーのシフトをjson_total_shift_storedに格納する
     for user in users:
-        shift_list_individual = {} #個人ごとのシフトリストを格納
-        arr = []
+        shift_list_each_private = {} #個人ごとのシフトリストを格納
+        tmp_arr = []
         
-        shifts = list(Shift.objects.filter(user=user,date__gte='2022-07-01',date__lte='2022-07-31'))
-
-        shift_list_individual['username'] = user.username
+        shifts = list(Shift.objects.filter(user=user,date__gte=selected_month_beginning_str,date__lte=selected_month_end_str))
+        print(f'selected_month_beginning:{selected_month_beginning_str} selected_month_end:{selected_month_end_str}')
+        print(shifts)
+        shift_list_each_private['username'] = user.username
 
         #特定個人のシフトをすべてshift_list_indivisualに格納する
         for shift in shifts:
-            arr.append({
+            tmp_arr.append({
                 "id": shift.id,
                 "date": shift.date.isoformat(),
                 "start": shift.begin.isoformat(),
                 "end": shift.finish.isoformat()   
             })
-        shift_list_individual['shift_list'] = arr
-        arr2.append(shift_list_individual)
+        shift_list_each_private['shift_list'] = tmp_arr
+        tmp_arr2.append(shift_list_each_private)
 
     
-    shift_list_json['shift_lists'] = arr2
+    json_total_shift_stored['shift_lists'] = tmp_arr2
 
-    return JsonResponse(shift_list_json)
+    return JsonResponse(json_total_shift_stored)
 """
 メール送信用
 """
