@@ -16,17 +16,23 @@ function view_shift_lists(){
         .then((res)=>{
             console.log(res);
             let thead_tr = document.createElement('tr');
-            const selected_month = $()
-            const date_for_display = new Date(2022,6,1)
-            const dt_last_date = new Date(date_for_display.getFullYear(),date_for_display.getMonth()+1,0);
+            const selected_month_str = $('#selected_month').val();
+            const selected_month = new Date(Date.parse(selected_month_str));
+            console.log(selected_month);
+            const dt_last_date = new Date(selected_month.getFullYear(),selected_month.getMonth()+1,0);
             console.log(dt_last_date)
+
+            let th_date_field_header = document.createElement('th');
+            th_date_field_header.innerHTML = "#";
+            thead_tr.appendChild(th_date_field_header);
+
             for(let i=1;i<=dt_last_date.getDate();i++){
-                let th = document.createElement('th');
-                dt_month = date_for_display.getMonth()+1;
-                dt_date = date_for_display.getDate();
-                th.innerHTML = dt_month + "/" + dt_date;
-                thead_tr.appendChild(th);
-                date_for_display.setDate(date_for_display.getDate()+1);
+                let th_date= document.createElement('th');
+                dt_month = selected_month.getMonth()+1;
+                dt_date = selected_month.getDate();
+                th_date.innerHTML = dt_month + "/" + dt_date;
+                thead_tr.appendChild(th_date);
+                selected_month.setDate(selected_month.getDate()+1);
             }
 
             const thead = document.createElement('thead');

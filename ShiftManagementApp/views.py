@@ -593,13 +593,16 @@ def edit_shift_publish_shift(request):
 """
 def shift_list(request):
     now = datetime.datetime.now()
-    last_month = datetime.datetime(now.year,now.month-2,1)
-    this_month = datetime.datetime(now.year,now.month-1,1)
-    next_month = datetime.datetime(now.year,now.month,1)
+    last_month = datetime.date(now.year,now.month-2,1)
+    this_month = datetime.date(now.year,now.month-1,1)
+    next_month = datetime.date(now.year,now.month,1)
     params= {
-        'last_month': last_month.strftime('%Y-%m'),
-        'this_month': this_month.strftime('%Y-%m'),
-        'next_month': next_month.strftime('%Y-%m')
+        'last_month_for_value': last_month.strftime('%Y-%m-%d'),
+        'this_month_for_value': this_month.strftime('%Y-%m-%d'),
+        'next_month_for_value': next_month.strftime('%Y-%m-%d'),
+        'last_month_for_display': last_month.strftime('%Y-%m'),
+        'this_month_for_display': this_month.strftime('%Y-%m'),
+        'next_month_for_display': next_month.strftime('%Y-%m')
     }
     return render(request,'ShiftManagementApp/shift_list.html',params)
 
@@ -611,8 +614,8 @@ def shift_list_ajax(request):
     tmp_arr2 = []
 
     res_json = json.loads(request.body)
-
-    dt = datetime.datetime.strptime(res_json["selected_month"],'%Y-%m')
+    print(res_json["selected_month"])
+    dt = datetime.datetime.strptime(res_json["selected_month"],'%Y-%m-%d')
     selected_month_beginning = dt
     selected_month_end = datetime.date(dt.year,dt.month+1,1) - datetime.timedelta(days=1)
 
@@ -627,7 +630,11 @@ def shift_list_ajax(request):
         shift_list_each_private = {} #個人ごとのシフトリストを格納
         tmp_arr = []
         
-        shifts = list(Shift.objects.filter(user=user,date__gte=selected_month_beginning_str,date__lte=selected_month_end_str))
+        """
+        dateオブジェクトでも文字列でもいけるが、どっちにする？
+        タイムゾーン考慮する
+        """
+        shifts = list(Shift.objects.filter(user=user,date__gte=selected_month_beginning,date__lte=selected_month_end))
         print(f'selected_month_beginning:{selected_month_beginning_str} selected_month_end:{selected_month_end_str}')
         print(shifts)
         shift_list_each_private['username'] = user.username
