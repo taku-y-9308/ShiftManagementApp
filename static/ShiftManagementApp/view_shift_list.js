@@ -25,12 +25,13 @@ function view_shift_lists(){
             let th_date_field_header = document.createElement('th');
             th_date_field_header.innerHTML = "#";
             thead_tr.appendChild(th_date_field_header);
-
+            const dayOfWeekStr = [ "日", "月", "火", "水", "木", "金", "土" ]
             for(let i=1;i<=dt_last_date.getDate();i++){
                 let th_date= document.createElement('th');
                 dt_month = selected_month.getMonth()+1;
-                dt_date = selected_month.getDate();
-                th_date.innerHTML = dt_month + "/" + dt_date;
+                dt_date = selected_month.getDate()
+                dt_day = selected_month.getDay()
+                th_date.innerHTML = dt_month + "/" + dt_date + "<br>" +dayOfWeekStr[dt_day];
                 thead_tr.appendChild(th_date);
                 selected_month.setDate(selected_month.getDate()+1);
             }

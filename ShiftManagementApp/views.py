@@ -593,9 +593,9 @@ def edit_shift_publish_shift(request):
 """
 def shift_list(request):
     now = datetime.datetime.now()
-    last_month = datetime.date(now.year,now.month-2,1)
-    this_month = datetime.date(now.year,now.month-1,1)
-    next_month = datetime.date(now.year,now.month,1)
+    last_month = datetime.date(now.year,now.month-1,1)
+    this_month = datetime.date(now.year,now.month,1)
+    next_month = datetime.date(now.year,now.month+1,1)
     params= {
         'last_month_for_value': last_month.strftime('%Y-%m-%d'),
         'this_month_for_value': this_month.strftime('%Y-%m-%d'),
