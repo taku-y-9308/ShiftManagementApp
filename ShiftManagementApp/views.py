@@ -634,7 +634,7 @@ def shift_list_ajax(request):
         dateオブジェクトでも文字列でもいけるが、どっちにする？
         タイムゾーン考慮する
         """
-        shifts = list(Shift.objects.filter(user=user,date__gte=selected_month_beginning,date__lte=selected_month_end))
+        shifts = list(Shift.objects.filter(user=user,date__gte=selected_month_beginning,date__lte=selected_month_end).order_by('date'))
         print(f'selected_month_beginning:{selected_month_beginning_str} selected_month_end:{selected_month_end_str}')
         print(shifts)
         shift_list_each_private['username'] = user.username
