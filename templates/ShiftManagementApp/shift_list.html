@@ -1,0 +1,26 @@
+{% extends "ShiftManagementApp/base.html" %}
+{% load static %}
+
+{% block title %}
+ShiftManagementApp
+{% endblock %}
+
+{%block header%}
+<script src="{% static 'ShiftManagementApp/view_shift_list.js'%}"></script>
+{%endblock%}
+
+{% block contents%}
+<form action="">
+    {% csrf_token %}
+        <select class="form-select form-control" aria-label="Default select" id="selected_month">
+            <option value="">表示する月を選択</option>
+            <option value={{last_month_for_value}}>{{last_month_for_display}}</option>
+            <option value={{this_month_for_value}}>{{this_month_for_display}}</option>
+            <option value={{next_month_for_value}}>{{next_month_for_display}}</option>
+        </select>
+        <button type="button" class="btn btn-primary mt-4" data-dismiss="modal" onclick="view_shift_lists();">表示</button>
+    </form>
+<table class="table table-bordered table-striped" id="data-table">
+</table>
+
+{% endblock %}
