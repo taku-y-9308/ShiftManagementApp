@@ -1,5 +1,3 @@
-/*ページ(DOM)読み込み後に実行*/
-//window.onload = 
 function view_shift_lists(){
     const tableEle = document.getElementById('data-table');
 
@@ -27,6 +25,7 @@ function view_shift_lists(){
             thead_tr.appendChild(th_date_field_header);
             const dayOfWeekStr = [ "日", "月", "火", "水", "木", "金", "土" ]
             
+            /**祝日を判定するために祝日APIにGETする */
             axios
                 .get('https://holidays-jp.github.io/api/v1/date.json')
                 .then((res)=>{
@@ -43,7 +42,6 @@ function view_shift_lists(){
                         const date_for_holiday_check = dt_year + "-"+ ('0'+dt_month).slice(-2) + "-" + ('0'+dt_date).slice(-2);
                         th_date.innerHTML = dt_month + "/" + dt_date + "<br>"
                         /**祝日判定 */
-                        
                         //祝日の場合
                         if(date_for_holiday_check in holidays_list){
                             th_date.insertAdjacentHTML('beforeend',"<span style='color:red'>" +dayOfWeekStr[dt_day] + "</span>");
@@ -66,7 +64,7 @@ function view_shift_lists(){
 
                 })
                 .catch((res)=>{
-
+                    alert('エラーが発生しました。再読み込みしてください。')
                 })
 
             const thead = document.createElement('thead');
@@ -83,18 +81,13 @@ function view_shift_lists(){
                 let th = document.createElement('th');
                 let td = document.createElement('td');
                 let fragment = document.createDocumentFragment();
-                const start_date = new Date(2022,6,1,9,0,0);
-                const search_date = start_date;
+                const search_date = new Date(Date.parse(selected_month_str));;
 
                 th.innerHTML = res.data.shift_lists[person_i].username;
                 tr.appendChild(th)
 
                 let count = 0;
                 let break_counter = 0;
-
-                //console.log(start_date);
-                //dt = new Date(res.data.shift_lists[person_i].shift_list[j].date)
-                //console.log(dt)
 
                 /**検索する日付と、その月末が並ぶまでループする*/
                 while(search_date.getDate()<=dt_last_date.getDate()){
