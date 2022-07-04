@@ -26,15 +26,48 @@ function view_shift_lists(){
             th_date_field_header.innerHTML = "#";
             thead_tr.appendChild(th_date_field_header);
             const dayOfWeekStr = [ "日", "月", "火", "水", "木", "金", "土" ]
-            for(let i=1;i<=dt_last_date.getDate();i++){
-                let th_date= document.createElement('th');
-                dt_month = selected_month.getMonth()+1;
-                dt_date = selected_month.getDate()
-                dt_day = selected_month.getDay()
-                th_date.innerHTML = dt_month + "/" + dt_date + "<br>" +dayOfWeekStr[dt_day];
-                thead_tr.appendChild(th_date);
-                selected_month.setDate(selected_month.getDate()+1);
-            }
+            
+            axios
+                .get('https://holidays-jp.github.io/api/v1/date.json')
+                .then((res)=>{
+                    const holidays_list = JSON.parse(JSON.stringify(res['data']));
+                    console.log(typeof(holidays_list))
+
+                    for(let i=1;i<=dt_last_date.getDate();i++){
+                        let th_date= document.createElement('th');
+                        dt_year = selected_month.getFullYear();
+                        dt_month = selected_month.getMonth()+1;
+                        dt_date = selected_month.getDate();
+                        dt_day = selected_month.getDay();
+
+                        const date_for_holiday_check = dt_year + "-"+ ('0'+dt_month).slice(-2) + "-" + ('0'+dt_date).slice(-2);
+                        th_date.innerHTML = dt_month + "/" + dt_date + "<br>"
+                        /**祝日判定 */
+                        
+                        //祝日の場合
+                        if(date_for_holiday_check in holidays_list){
+                            th_date.insertAdjacentHTML('beforeend',"<span style='color:red'>" +dayOfWeekStr[dt_day] + "</span>");
+                        }
+                        //土曜日の場合
+                        else if(dt_day==6){
+                            th_date.insertAdjacentHTML('beforeend',"<span style='color:blue'>" +dayOfWeekStr[dt_day] + "</span>");
+                        }
+                        //日曜日の場合
+                        else if(dt_day==0){
+                            th_date.insertAdjacentHTML('beforeend',"<span style='color:red'>" +dayOfWeekStr[dt_day] + "</span>");
+                        }
+                        //平日の場合
+                        else{
+                            th_date.innerHTML = dt_month + "/" + dt_date + "<br>" +dayOfWeekStr[dt_day];
+                        }
+                        thead_tr.appendChild(th_date);
+                        selected_month.setDate(selected_month.getDate()+1);
+                    }
+
+                })
+                .catch((res)=>{
+
+                })
 
             const thead = document.createElement('thead');
             thead.appendChild(thead_tr);
