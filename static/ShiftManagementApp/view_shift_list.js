@@ -3,6 +3,7 @@ function view_shift_lists(){
     if($('#selected_month').val()=='none'){
         alert('月を選択してください')
     }
+    dispLoading('Loading...');
     const tableEle = document.getElementById('data-table');
 
     /**表が下に増えていくのを防ぐためクリックするたび表を削除する */
@@ -69,6 +70,9 @@ function view_shift_lists(){
                 })
                 .catch((res)=>{
                     alert('エラーが発生しました。再読み込みしてください。')
+                })
+                .finally(()=>{
+                    removeLoading();
                 })
 
             const thead = document.createElement('thead');
