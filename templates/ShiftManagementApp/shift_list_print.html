@@ -6,10 +6,11 @@ ShiftManagementApp
 {% endblock %}
 
 {%block header%}
-<script src="{% static 'ShiftManagementApp/view_shift_list.js'%}"></script>
+<script src="{% static 'ShiftManagementApp/print_shift_list.js'%}"></script>
 {%endblock%}
 
 {% block contents%}
+
 <form action="">
     {% csrf_token %}
         <select class="form-select form-control" aria-label="Default select" id="selected_month">
@@ -18,12 +19,12 @@ ShiftManagementApp
             <option value={{this_month_for_value}}>{{this_month_for_display}}</option>
             <option value={{next_month_for_value}}>{{next_month_for_display}}</option>
         </select>
-        <button type="button" class="btn btn-outline-primary mt-4" data-dismiss="modal" onclick="view_shift_lists();">表示</button>
+        <button type="button" class="btn btn-outline-secondary mt-4" data-dismiss="modal" onclick="print_shift_lists(true);">前半を表示する</button>
+        <button type="button" class="btn btn-outline-secondary mt-4" data-dismiss="modal" onclick="print_shift_lists(false);">後半を表示する</button>
     </form>
 
-<div class="table-responsive">
-    <table class="table table-bordered table-striped" id="data-table">
-    </table>
-</div>
+<div id="moving_to_front_back"></div>
+<table class="table table-bordered table-striped" id="data-table">
+</table>
 
 {% endblock %}
