@@ -20,6 +20,7 @@ urlpatterns = [
     path('edit-shift-mode/',views.edit_shift_mode,name='edit-shift-mode'),
     path('shift-list/',views.shift_list,name='shift-list'),
     path('shift-list-ajax/',views.shift_list_ajax,name='shift-list-ajax'),
+    path('shift-list-print/',views.shift_list_print,name='shift-list-print'),
     path('password_reset/', views.PasswordReset.as_view(), name='password_reset'), 
     path('password_reset/done/', views.PasswordResetDone.as_view(), name='password_reset_done'), 
     path('reset/<uidb64>/<token>/', views.PasswordResetConfirm.as_view(), name='password_reset_confirm'), 

@@ -1,8 +1,9 @@
-function view_shift_lists(){
+function print_shift_lists(is_first_half_second_half){
 
     if($('#selected_month').val()=='none'){
         alert('月を選択してください')
     }
+
     const tableEle = document.getElementById('data-table');
 
     /**表が下に増えていくのを防ぐためクリックするたび表を削除する */
@@ -21,27 +22,37 @@ function view_shift_lists(){
             const selected_month_str = $('#selected_month').val();
             const selected_month = new Date(Date.parse(selected_month_str));
             console.log(selected_month);
-            const dt_last_date = new Date(selected_month.getFullYear(),selected_month.getMonth()+1,0);
-            console.log(dt_last_date)
 
             let th_date_field_header = document.createElement('th');
             th_date_field_header.innerHTML = "#";
             thead_tr.appendChild(th_date_field_header);
             const dayOfWeekStr = [ "日", "月", "火", "水", "木", "金", "土" ]
             
-            /**祝日を判定するために祝日APIにGETする */
+            /**祝日を判定するために非同期で祝日APIにGETする */
             axios
                 .get('https://holidays-jp.github.io/api/v1/date.json')
                 .then((res)=>{
                     const holidays_list = JSON.parse(JSON.stringify(res['data']));
                     console.log(typeof(holidays_list))
 
-                    for(let i=1;i<=dt_last_date.getDate();i++){
+                    //前半表示か後半表示でで表示する日付の範囲を変える
+                    if(is_first_half_second_half){
+                        var dt_start_date_for_display = new Date(selected_month.getFullYear(),selected_month.getMonth(),1,9,0,0);
+                        var dt_last_date_for_display = new Date(selected_month.getFullYear(),selected_month.getMonth(),15,9,0,0);
+                    }
+                    else{
+                        var dt_start_date_for_display = new Date(selected_month.getFullYear(),selected_month.getMonth(),16,9,0,0);
+                        var dt_last_date_for_display = new Date(selected_month.getFullYear(),selected_month.getMonth()+1,0,9,0,0);
+                    }
+
+                    //start_dateとlast_dateの間の分だけループする
+                    const difference_of_start_and_end = dt_last_date_for_display.getDate()-dt_start_date_for_display.getDate()+1;
+                    for(let i=1;i<=difference_of_start_and_end;i++){
                         let th_date= document.createElement('th');
-                        dt_year = selected_month.getFullYear();
-                        dt_month = selected_month.getMonth()+1;
-                        dt_date = selected_month.getDate();
-                        dt_day = selected_month.getDay();
+                        dt_year = dt_start_date_for_display.getFullYear();
+                        dt_month = dt_start_date_for_display.getMonth()+1;
+                        dt_date = dt_start_date_for_display.getDate();
+                        dt_day = dt_start_date_for_display.getDay();
 
                         const date_for_holiday_check = dt_year + "-"+ ('0'+dt_month).slice(-2) + "-" + ('0'+dt_date).slice(-2);
                         th_date.innerHTML = dt_month + "/" + dt_date + "<br>"
@@ -63,7 +74,7 @@ function view_shift_lists(){
                             th_date.innerHTML = dt_month + "/" + dt_date + "<br>" +dayOfWeekStr[dt_day];
                         }
                         thead_tr.appendChild(th_date);
-                        selected_month.setDate(selected_month.getDate()+1);
+                        dt_start_date_for_display.setDate(dt_start_date_for_display.getDate()+1);
                     }
 
                 })
@@ -85,6 +96,10 @@ function view_shift_lists(){
                 let th = document.createElement('th');
                 let td = document.createElement('td');
                 let fragment = document.createDocumentFragment();
+
+                const dt_start_date = new Date(selected_month.getFullYear(),selected_month.getMonth(),1,9,0,0);
+                const dt_last_date = new Date(selected_month.getFullYear(),selected_month.getMonth()+1,0,9,0,0);
+
                 const search_date = new Date(Date.parse(selected_month_str));;
 
                 th.innerHTML = res.data.shift_lists[person_i].username;
@@ -94,13 +109,14 @@ function view_shift_lists(){
                 let break_counter = 0;
 
                 /**検索する日付と、その月末が並ぶまでループする*/
-                while(search_date.getDate()<=dt_last_date.getDate()){
+                while(dt_start_date.getDate()<=dt_last_date.getDate()){
+
                     let td = document.createElement('td'); //毎回定義しないと同じエレメントに上書きされる
 
                     if(count == res.data.shift_lists[person_i].shift_list.length){
                         td.innerHTML = ""
                     }
-                    else if(new Date(res.data.shift_lists[person_i].shift_list[count].date).getTime() == search_date.getTime()){
+                    else if(new Date(res.data.shift_lists[person_i].shift_list[count].date).getTime() == dt_start_date.getTime()){
                         start_date_object = new Date(res.data.shift_lists[person_i].shift_list[count].start);
                         end_date_object = new Date(res.data.shift_lists[person_i].shift_list[count].end);
 
@@ -126,22 +142,31 @@ function view_shift_lists(){
 
                     /**日付が並んでいないか判定
                      * 日付なので、同じ月でsearch_date.getDate()>dt_last_date.getDate()となることはないため
-                     * 無限ループになるのを防ぐ*/
-                    if(search_date.getDate() == dt_last_date.getDate()){
+                     * breakして無限ループになるのを防ぐ*/
+                    if(dt_start_date.getDate() == dt_last_date.getDate()){
                         fragment.appendChild(td);
                         break;
                     }
 
-                    //console.log(count);
-                    fragment.appendChild(td);
-                    search_date.setDate(search_date.getDate()+1);
+                    //前半表示：検索中の日付が15日以下ならHTMLに追加する
+                    //後半表示：検索中の日付が16日以上ならHTMLに追加する
+                    if(is_first_half_second_half){
+                        if(dt_start_date.getDate()<=15){
+                            fragment.appendChild(td);
+                        }
+                    }
+                    else{
+                        if(dt_start_date.getDate()>=16){
+                            fragment.appendChild(td);
+                        }
+                    }
+                    
+                    dt_start_date.setDate(dt_start_date.getDate()+1);
                 }
-
                 tr.appendChild(fragment);
                 console.log(tr);
                 tbody.appendChild(tr);
                 tableEle.appendChild(tbody);
-  
             }
         })
         .catch((res)=>{
