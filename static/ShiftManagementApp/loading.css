@@ -14,5 +14,5 @@
     text-align: center;
     vertical-align: middle;
     padding-top: 140px;
-    background: url("http://54.150.232.136/static/ShiftManagementApp/Iphone-spinner-2.gif") center center no-repeat;
+    background: url("http://shiftmanagementapp-heroku.herokuapp.com/static/ShiftManagementApp/Iphone-spinner-2.gif") center center no-repeat;
   }
