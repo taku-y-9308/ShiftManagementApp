@@ -81,9 +81,6 @@ function print_shift_lists(is_first_half_second_half){
                 .catch((res)=>{
                     alert('エラーが発生しました。再読み込みしてください。')
                 })
-                .finally(()=>{
-                    removeLoading();
-                })
 
             const thead = document.createElement('thead');
             thead.appendChild(thead_tr);
@@ -174,6 +171,9 @@ function print_shift_lists(is_first_half_second_half){
         })
         .catch((res)=>{
             console.log(res);
+        })
+        .finally(()=>{
+            removeLoading();
         })
     }
 

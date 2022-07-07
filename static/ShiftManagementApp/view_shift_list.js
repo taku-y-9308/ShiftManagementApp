@@ -71,9 +71,6 @@ function view_shift_lists(){
                 .catch((res)=>{
                     alert('エラーが発生しました。再読み込みしてください。')
                 })
-                .finally(()=>{
-                    removeLoading();
-                })
 
             const thead = document.createElement('thead');
             thead.appendChild(thead_tr);
@@ -150,6 +147,9 @@ function view_shift_lists(){
         })
         .catch((res)=>{
             console.log(res);
+        })
+        .finally(()=>{
+            removeLoading();
         })
     }
 
