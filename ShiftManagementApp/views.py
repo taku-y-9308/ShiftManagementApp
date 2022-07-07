@@ -654,6 +654,25 @@ def shift_list_ajax(request):
     json_total_shift_stored['shift_lists'] = tmp_arr2
 
     return JsonResponse(json_total_shift_stored)
+
+"""
+印刷用ページ作成
+"""
+def shift_list_print(request):
+    now = datetime.datetime.now()
+    last_month = datetime.date(now.year,now.month-1,1)
+    this_month = datetime.date(now.year,now.month,1)
+    next_month = datetime.date(now.year,now.month+1,1)
+    params= {
+        'last_month_for_value': last_month.strftime('%Y-%m-%d'),
+        'this_month_for_value': this_month.strftime('%Y-%m-%d'),
+        'next_month_for_value': next_month.strftime('%Y-%m-%d'),
+        'last_month_for_display': last_month.strftime('%Y-%m'),
+        'this_month_for_display': this_month.strftime('%Y-%m'),
+        'next_month_for_display': next_month.strftime('%Y-%m')
+    }
+    return render(request,'ShiftManagementApp/shift_list_print.html',params)
+
 """
 メール送信用
 """

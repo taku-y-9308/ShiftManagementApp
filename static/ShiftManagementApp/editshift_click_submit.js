@@ -5,6 +5,7 @@ $(document).on('click','#submit-date',function show_timeline() {
     
     $('#submit-date').off('click') //offでクリックイベントを削除することで複数登録を防ぐ
         dispLoading('Loading...');
+        
         axios
             .post("/edit-shift-Ajax/",{
                     "date":$('#edit-date').val()
