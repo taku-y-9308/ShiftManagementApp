@@ -1,5 +1,5 @@
 asgiref==3.4.1
-Django==3.2.13
+Django==3.2.14
 django-environ==0.8.1
 mysqlclient==2.1.0
 pytz==2021.3
