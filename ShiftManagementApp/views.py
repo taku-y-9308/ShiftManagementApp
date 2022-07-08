@@ -591,87 +591,100 @@ def edit_shift_publish_shift(request):
 """
 シフト一覧表表示用
 """
+@login_required
 def shift_list(request):
-    now = datetime.datetime.now()
-    last_month = datetime.date(now.year,now.month-1,1)
-    this_month = datetime.date(now.year,now.month,1)
-    next_month = datetime.date(now.year,now.month+1,1)
-    params= {
-        'last_month_for_value': last_month.strftime('%Y-%m-%d'),
-        'this_month_for_value': this_month.strftime('%Y-%m-%d'),
-        'next_month_for_value': next_month.strftime('%Y-%m-%d'),
-        'last_month_for_display': last_month.strftime('%Y-%m'),
-        'this_month_for_display': this_month.strftime('%Y-%m'),
-        'next_month_for_display': next_month.strftime('%Y-%m')
-    }
-    return render(request,'ShiftManagementApp/shift_list.html',params)
+    if request.user.is_staff:
+        now = datetime.datetime.now()
+        last_month = datetime.date(now.year,now.month-1,1)
+        this_month = datetime.date(now.year,now.month,1)
+        next_month = datetime.date(now.year,now.month+1,1)
+        params= {
+            'last_month_for_value': last_month.strftime('%Y-%m-%d'),
+            'this_month_for_value': this_month.strftime('%Y-%m-%d'),
+            'next_month_for_value': next_month.strftime('%Y-%m-%d'),
+            'last_month_for_display': last_month.strftime('%Y-%m'),
+            'this_month_for_display': this_month.strftime('%Y-%m'),
+            'next_month_for_display': next_month.strftime('%Y-%m')
+        }
+        return render(request,'ShiftManagementApp/shift_list.html',params)
+    else:
+        return HttpResponse('アクセス権がありません')
+
 
 """
 特定期間、かつ同じshop_idのシフトをすべてJSONで返す
 """
+@login_required
 def shift_list_ajax(request):
-    json_total_shift_stored = {} #全体のシフトが格納されたjson
-    tmp_arr2 = []
+    if request.user.is_staff:
+        json_total_shift_stored = {} #全体のシフトが格納されたjson
+        tmp_arr2 = []
 
-    res_json = json.loads(request.body)
-    print(res_json["selected_month"])
-    dt = datetime.datetime.strptime(res_json["selected_month"],'%Y-%m-%d')
-    selected_month_beginning = dt
-    selected_month_end = datetime.date(dt.year,dt.month+1,1) - datetime.timedelta(days=1)
+        res_json = json.loads(request.body)
+        print(res_json["selected_month"])
+        dt = datetime.datetime.strptime(res_json["selected_month"],'%Y-%m-%d')
+        selected_month_beginning = dt
+        selected_month_end = datetime.date(dt.year,dt.month+1,1) - datetime.timedelta(days=1)
 
-    selected_month_beginning_str = selected_month_beginning.strftime('%Y-%m-%d')
-    selected_month_end_str = selected_month_end.strftime('%Y-%m-%d')
+        selected_month_beginning_str = selected_month_beginning.strftime('%Y-%m-%d')
+        selected_month_end_str = selected_month_end.strftime('%Y-%m-%d')
 
 
-    users= User.objects.filter(shop_id=request.user.shop_id)
+        users= User.objects.filter(shop_id=request.user.shop_id)
 
-    #すべてのユーザーのシフトをjson_total_shift_storedに格納する
-    for user in users:
-        shift_list_each_private = {} #個人ごとのシフトリストを格納
-        tmp_arr = []
+        #すべてのユーザーのシフトをjson_total_shift_storedに格納する
+        for user in users:
+            shift_list_each_private = {} #個人ごとのシフトリストを格納
+            tmp_arr = []
+            
+            """
+            dateオブジェクトでも文字列でもいけるが、どっちにする？
+            タイムゾーン考慮する
+            """
+            shifts = list(Shift.objects.filter(user=user,date__gte=selected_month_beginning,date__lte=selected_month_end).order_by('date'))
+            print(f'selected_month_beginning:{selected_month_beginning_str} selected_month_end:{selected_month_end_str}')
+            print(shifts)
+            shift_list_each_private['username'] = user.username
+
+            #特定個人のシフトをすべてshift_list_indivisualに格納する
+            for shift in shifts:
+                tmp_arr.append({
+                    "id": shift.id,
+                    "date": shift.date.isoformat(),
+                    "start": shift.begin.isoformat(),
+                    "end": shift.finish.isoformat()   
+                })
+            shift_list_each_private['shift_list'] = tmp_arr
+            tmp_arr2.append(shift_list_each_private)
+
         
-        """
-        dateオブジェクトでも文字列でもいけるが、どっちにする？
-        タイムゾーン考慮する
-        """
-        shifts = list(Shift.objects.filter(user=user,date__gte=selected_month_beginning,date__lte=selected_month_end).order_by('date'))
-        print(f'selected_month_beginning:{selected_month_beginning_str} selected_month_end:{selected_month_end_str}')
-        print(shifts)
-        shift_list_each_private['username'] = user.username
+        json_total_shift_stored['shift_lists'] = tmp_arr2
 
-        #特定個人のシフトをすべてshift_list_indivisualに格納する
-        for shift in shifts:
-            tmp_arr.append({
-                "id": shift.id,
-                "date": shift.date.isoformat(),
-                "start": shift.begin.isoformat(),
-                "end": shift.finish.isoformat()   
-            })
-        shift_list_each_private['shift_list'] = tmp_arr
-        tmp_arr2.append(shift_list_each_private)
-
-    
-    json_total_shift_stored['shift_lists'] = tmp_arr2
-
-    return JsonResponse(json_total_shift_stored)
+        return JsonResponse(json_total_shift_stored)
+    else:
+        return HttpResponse('アクセス権がありません')
 
 """
 印刷用ページ作成
 """
+@login_required
 def shift_list_print(request):
-    now = datetime.datetime.now()
-    last_month = datetime.date(now.year,now.month-1,1)
-    this_month = datetime.date(now.year,now.month,1)
-    next_month = datetime.date(now.year,now.month+1,1)
-    params= {
-        'last_month_for_value': last_month.strftime('%Y-%m-%d'),
-        'this_month_for_value': this_month.strftime('%Y-%m-%d'),
-        'next_month_for_value': next_month.strftime('%Y-%m-%d'),
-        'last_month_for_display': last_month.strftime('%Y-%m'),
-        'this_month_for_display': this_month.strftime('%Y-%m'),
-        'next_month_for_display': next_month.strftime('%Y-%m')
-    }
-    return render(request,'ShiftManagementApp/shift_list_print.html',params)
+    if request.user.is_staff:
+        now = datetime.datetime.now()
+        last_month = datetime.date(now.year,now.month-1,1)
+        this_month = datetime.date(now.year,now.month,1)
+        next_month = datetime.date(now.year,now.month+1,1)
+        params= {
+            'last_month_for_value': last_month.strftime('%Y-%m-%d'),
+            'this_month_for_value': this_month.strftime('%Y-%m-%d'),
+            'next_month_for_value': next_month.strftime('%Y-%m-%d'),
+            'last_month_for_display': last_month.strftime('%Y-%m'),
+            'this_month_for_display': this_month.strftime('%Y-%m'),
+            'next_month_for_display': next_month.strftime('%Y-%m')
+        }
+        return render(request,'ShiftManagementApp/shift_list_print.html',params)
+    else:
+        return HttpResponse('アクセス権がありません')
 
 """
 メール送信用
