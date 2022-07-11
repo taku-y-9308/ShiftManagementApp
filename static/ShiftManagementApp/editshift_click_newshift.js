@@ -19,6 +19,7 @@ $(document).on('click','#create-newshift',function () {
                 //alert('送信成功');
                 console.log($('#submit-newshift-date').val()+"T"+$('#submit-newshift-start').val())
                 $('#submit-newshift-modal').modal('hide');//modalを閉じる
+                alert('送信成功しました。もう一度送信ボタンを推して再読み込みしてください。')
             })
             .catch(()=>{
                 alert('送信失敗しました');
