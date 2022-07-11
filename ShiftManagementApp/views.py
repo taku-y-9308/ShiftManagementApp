@@ -335,7 +335,6 @@ def submitshift(request):
     end = datetime.datetime.strptime(end_str,'%Y-%m-%dT%H:%M')
     print(request.user.id)
     """
-    送信された日付が現在編集可能な場合
     編集可能期間または編集モードのときにシフトを編集できる
     """
     if (Judge_editable(start_str) == True or request.user.is_edit_mode == True):
