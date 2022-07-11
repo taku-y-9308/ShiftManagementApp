@@ -546,7 +546,8 @@ def editshift_ajax_delete_shiftdata(request):
         削除リクエストの判定
         編集可能期間もしくは、編集モードの時に削除リクエストを受け付ける
         """
-        if (Judge_editable(datas['start']) == True or request.user.is_edit_mode == True):
+        for_judge_date = f"{datas['date']}T{datas['start']}"
+        if (Judge_editable(for_judge_date) == True or request.user.is_edit_mode == True):
             #getは対象が存在しないと例外を返すため念の為try文にしている
             try:
                 Shift.objects.get(id=datas['id']).delete()
