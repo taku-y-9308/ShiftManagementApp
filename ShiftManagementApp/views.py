@@ -377,6 +377,7 @@ def submitshift(request):
         print("編集不可")
         return JsonResponse(response,safe=False)
 
+
 '''
 シフト提出可能期間かを判定
 date_str :YYYY-mm-ddTHH:MM

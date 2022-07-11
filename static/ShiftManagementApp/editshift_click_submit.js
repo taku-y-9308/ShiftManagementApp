@@ -9,9 +9,15 @@ $(document).on('click','#submit-date',function show_timeline() {
         axios
             .post("/edit-shift-Ajax/",{
                     "date":$('#edit-date').val()
-                })
+            })
             .then((res)=>{
-                
+                /*
+                if(res.data.length == 0){
+                    const no_shift_alert = document.getElementById('no_shift_alert');
+                    no_shift_alert.innerHTML = '<b>シフトが存在しないか、公開されていません</b>'
+                   $('#no_shift_alert').modal('show');
+                }
+                */
                 google.charts.load('current', {'packages':['timeline']});
                 google.charts.setOnLoadCallback(drawChart);
                 function drawChart() {
