@@ -113,6 +113,7 @@ document.addEventListener('DOMContentLoaded', function draw_calender() {
               axios
                   .post("/edit-shift-Ajax/delete-shiftdata/",{
                       'id':$('#shift_id').val(),
+                      'date':$('#date').val(),
                       'start':$('#start').val()
                   })
                   .then((res)=>{
