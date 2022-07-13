@@ -45,7 +45,11 @@ def Login(request):
                     return HttpResponseRedirect(next)
 
             else:
-                return HttpResponse("アカウントが有効ではありません")
+                error_message = "アカウントが有効化されていません。"
+                params = {
+                    "error_message":error_message
+                }
+                return render(request,'ShiftManagementApp/login.html',params)
         else:
             error_message = "ログインIDまたはパスワードが違います"
             params = {
@@ -621,9 +625,9 @@ def shift_list_ajax(request):
         json_total_shift_stored = {} #全体のシフトが格納されたjson
         tmp_arr2 = []
 
-        res_json = json.loads(request.body)
-        print(res_json["selected_month"])
-        dt = datetime.datetime.strptime(res_json["selected_month"],'%Y-%m-%d')
+        res = json.loads(request.body)
+        print(res["selected_month"])
+        dt = datetime.datetime.strptime(res["selected_month"],'%Y-%m-%d')
         selected_month_beginning = dt
         selected_month_end = datetime.date(dt.year,dt.month+1,1) - datetime.timedelta(days=1)
 
@@ -686,6 +690,56 @@ def shift_list_print(request):
         return render(request,'ShiftManagementApp/shift_list_print.html',params)
     else:
         return HttpResponse('アクセス権がありません')
+
+@login_required
+def account_setting(request):
+    if request.method == 'GET':
+        return render(request,'ShiftManagementApp/account_settings.html')
+    
+    #POSTリクエストで実行
+    else :
+        #スタッフユーザーのみ実行可能        
+        if request.user.is_staff:
+            users = User.objects.filter(shop_id=request.user.shop_id).order_by('id')
+            user_list_private = {} #個人ごとのユーザーリストを格納
+            user_list = [] # return用の完全なユーザーリストを格納
+            for user in users:
+                user_list_private = {
+                    "user_id": user.id,
+                    "username": user.username,
+                    "default_position": user.default_position,
+                    "is_active": user.is_active,
+                    "is_edit_mode": user.is_edit_mode
+                }
+                user_list.append(user_list_private)
+            return JsonResponse(user_list,safe=False)
+            
+        #一般ユーザーの場合
+        else:
+           return JsonResponse({"error_mes":"アクセス権限がありません"})
+
+"""
+指定カラムのbool値を変更する
+"""
+def valid_invalid_change(request):
+    if request.method == 'POST':
+        if request.user.is_staff:
+            res = json.loads(request.body)
+            user_id = res['user_id']
+            target = res['target']
+            current_bool =  bool(res['current_bool'])
+            if target == 'is_active':
+                user = User.objects.filter(id=user_id).update(is_active=(not current_bool))
+            elif target == 'is_edit_mode':
+                user = User.objects.filter(id=user_id).update(is_edit_mode=(not current_bool))
+            else:
+                return JsonResponse({"error_mes":"targetが指定の値ではありません"})
+            
+            return JsonResponse({"status_code":0})
+    else:
+        raise Http404()
+
+
 
 """
 メール送信用
