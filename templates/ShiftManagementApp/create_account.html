@@ -43,6 +43,11 @@
             <label for="last-name">ポジション</label>
             {{form.default_position}}
         </div>
+        <div class="mt-3 text-center" style="color:red ;">
+          <b>
+            作成したアカウントは管理者に有効化されるまで使用できません。
+          </b>
+        </div>
         <div class="mt-3 text-center">
             <a href="{%url 'ShiftManagementApp:Login'%}" class="mr-3"><<戻る</a>
             <button type="submit" class="btn btn-primary btn-lg">登録</button>
