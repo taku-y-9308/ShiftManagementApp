@@ -1,0 +1,40 @@
+{% extends "ShiftManagementApp/base.html" %}
+{% load static %}
+
+{% block title %}
+ShiftManagementApp
+{% endblock %}
+
+{%block header%}
+<script src="{% static 'ShiftManagementApp/account_settings.js'%}"></script>
+<script src="{% static 'ShiftManagementApp/valid_invalid_change.js'%}"></script>
+<script src="{%static 'ShiftManagementApp/loading.js'%}"></script>
+{%endblock%}
+
+{% block contents%}
+<table id="account_setting_table" class="table text-center">
+    <thead>
+        <tr>
+            <th>アカウントID</th>
+            <th>ユーザー名</th>
+            <th>デフォルトポジション</th>
+            <th>登録状態</th>
+            <th>シフト提出後編集モード</th>
+        </tr>
+    </thead>
+    <tbody id="table_body"></tbody>
+</table>
+
+<div class="modal fade" id="account_disable_warning" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-body">
+          対象のユーザーはログイン権限がなくなったためログインできなくなります。
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">閉じる</button>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
