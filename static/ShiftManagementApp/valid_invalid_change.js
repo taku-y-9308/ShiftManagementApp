@@ -11,7 +11,7 @@
  */
 function valid_invalid_change(user_id,target,current_bool){
     if(target == 'is_active' && current_bool==true){
-        $('#account_disable_when_warning').modal('show');
+        $('#account_disable_warning').modal('show');
     }
     axios.defaults.xsrfHeaderName = "X-CSRFTOKEN"
     axios.defaults.xsrfCookieName = "csrftoken"

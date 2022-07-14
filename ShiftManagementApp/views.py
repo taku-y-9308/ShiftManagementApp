@@ -691,6 +691,9 @@ def shift_list_print(request):
     else:
         return HttpResponse('アクセス権がありません')
 
+"""
+アカウント設定画面
+"""
 @login_required
 def account_setting(request):
     if request.method == 'GET':
@@ -721,6 +724,7 @@ def account_setting(request):
 """
 指定カラムのbool値を変更する
 """
+@login_required
 def valid_invalid_change(request):
     if request.method == 'POST':
         if request.user.is_staff:

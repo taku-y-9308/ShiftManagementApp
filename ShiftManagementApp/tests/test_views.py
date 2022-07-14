@@ -21,6 +21,7 @@ class Calendartest(TestCase):
         email = 'test@mail.com'
         password = 'testpassword'
         is_edit_mode = True
+        is_active = True
 
         self.user = User.objects.create_user(
             username,
@@ -28,7 +29,8 @@ class Calendartest(TestCase):
             password,
             shop_id=shop_id,
             default_position=default_position,
-            is_edit_mode=is_edit_mode
+            is_edit_mode=is_edit_mode,
+            is_active=is_active
             )
 
         self.client.login(email=email,password=password)
