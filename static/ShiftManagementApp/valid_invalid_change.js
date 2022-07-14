@@ -10,6 +10,8 @@
  * targetを入力したbool値の反対の値にする
  */
 function valid_invalid_change(user_id,target,current_bool){
+
+    //現在アクティブなユーザーを無効化する時に出す警告モーダル
     if(target == 'is_active' && current_bool==true){
         $('#account_disable_warning').modal('show');
     }
