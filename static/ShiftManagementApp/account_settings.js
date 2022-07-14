@@ -27,7 +27,7 @@ function account_setting() {
                 td_username.innerHTML = res.data[i_person].username;
                 tr.appendChild(td_username);
                 
-                if(td_default_position){
+                if(res.data[i_person].default_position){
                     td_default_position.innerHTML = '<span class="h6"><b>ホール</b></span>';    
                 }else{
                     td_default_position.innerHTML = '<span class="h6"><b>キッチン</b></span>';    
