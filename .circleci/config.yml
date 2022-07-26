@@ -7,9 +7,8 @@ workflows:
       - heroku-container/push-and-release:
           app-name: shiftmanagementapp-heroku
           before-build: 
-            - run: 
-              source myenv/bin/activate
-              python3 manage.py test
+            - run: source myenv/bin/activate
+            - run: python3 manage.py test
           filters: 
             branches: 
               only: 
