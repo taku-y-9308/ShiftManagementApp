@@ -8,13 +8,10 @@ jobs:
       - image: python:3.9.13
     steps: 
       - checkout
+      - run: echo 'export EMAIL_HOST_PASSWORD=$EMAIL_HOST_PASSWORD'
       - run: pip install -r requirements.txt
       - run: python3 manage.py test
-<<<<<<< HEAD
-  
-=======
 workflows: 
->>>>>>> 01516adc97180da0e67a77884f8a4ec71ac2ddc0
   build_and_release: 
     jobs: 
       - test
