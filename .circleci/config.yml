@@ -10,9 +10,14 @@ jobs:
       - checkout
       - run: pip install -r requirements.txt
       - run: python3 manage.py test
+<<<<<<< HEAD
   
+=======
+workflows: 
+>>>>>>> 01516adc97180da0e67a77884f8a4ec71ac2ddc0
   build_and_release: 
     jobs: 
+      - test
       - heroku-container/push-and-release:
           app-name: shiftmanagementapp-heroku
           filters: 
