@@ -50,7 +50,7 @@ function account_setting() {
                 if(res.data[i_person].is_edit_mode){
                     td_is_edit_mode.innerHTML = '<button type="button" class="btn btn-danger">有効</button>';
                 }else{
-                    td_is_edit_mode.innerHTML = '<button type="button" class="btn btn-secondary" onclick="valid_invalid_change()">無効</button>';
+                    td_is_edit_mode.innerHTML = '<button type="button" class="btn btn-secondary">無効</button>';
                 }
                 td_is_edit_mode.onclick = function(){
                     valid_invalid_change(res.data[i_person].user_id,'is_edit_mode',res.data[i_person].is_edit_mode);
