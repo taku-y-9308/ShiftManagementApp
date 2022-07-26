@@ -5,8 +5,8 @@ workflows:
   build_and_release: 
     jobs: 
       - heroku-container/push-and-release:
-        app-name: shiftmanagementapp-heroku
-        filters: 
-          branches: 
-            only: 
-              - main
+          app-name: shiftmanagementapp-heroku
+          filters: 
+            branches: 
+              only: 
+                - main
