@@ -7,8 +7,8 @@ workflows:
       - heroku-container/push-and-release:
           app-name: shiftmanagementapp-heroku
           before-build: 
-            run: pip install -r requirements.txt
-            run: python3 manage.py test
+            - run: pip install -r requirements.txt
+            - run: python3 manage.py test
           filters: 
             branches: 
               only: 
