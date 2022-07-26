@@ -1,0 +1,9 @@
+version: '3.7'
+
+services: 
+  app: 
+    build: ./
+    container_name: app
+    ports: 
+      - 80:8000
+    tty: true
