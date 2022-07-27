@@ -3,8 +3,11 @@ orbs:
   heroku-container: pbrisbin/heroku-container@1.0.0
 
 jobs: 
-  test: 
+  create_test_postgres: 
     docker: 
+      - image: circleci/postgres
+        environment: 
+          POSTGRES_DB: dtvn6smssuuna
       - image: python:3.9.13
     steps: 
       - checkout
@@ -13,12 +16,14 @@ jobs:
       - run: pip install -r requirements.txt
       - run: python3 manage.py test
 workflows: 
-  build_and_release: 
+  create_test_postgres:
     jobs: 
-      - test
+      - create_test_postgres 
       - heroku-container/push-and-release:
           app-name: shiftmanagementapp-heroku
           filters: 
             branches: 
               only: 
                 - main
+          requires: 
+            - create_test_postgres
