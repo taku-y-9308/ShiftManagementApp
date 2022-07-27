@@ -9,6 +9,7 @@ jobs:
       - image: circleci/postgres
         environment: 
           POSTGRES_DB: dtvn6smssuuna
+          POSTGRES_PASSWORD: admin
     steps: 
       - checkout
       - run: echo 'export EMAIL_HOST_PASSWORD=$EMAIL_HOST_PASSWORD'
