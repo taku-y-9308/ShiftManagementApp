@@ -3,6 +3,11 @@ orbs:
   heroku-container: pbrisbin/heroku-container@1.0.0
 
 jobs: 
+  create_test_postgres: 
+    docker: 
+      - image: circleci/postgres
+        environment: 
+          - POSTGRES_DB: dtvn6smssuuna
   test: 
     docker: 
       - image: python:3.9.13
@@ -12,13 +17,11 @@ jobs:
       - run: echo 'export SECRET_KEY=$SECRET_KEY'
       - run: pip install -r requirements.txt
       - run: python3 manage.py test
-workflows: 
+    
   build_and_release: 
-    jobs: 
-      - test
-      - heroku-container/push-and-release:
-          app-name: shiftmanagementapp-heroku
-          filters: 
-            branches: 
-              only: 
-                - main
+    heroku-container/push-and-release:
+      app-name: shiftmanagementapp-heroku
+      filters: 
+        branches: 
+          only: 
+            - main

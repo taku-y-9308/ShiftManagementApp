@@ -87,13 +87,15 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
+#Circle CIテスト用のDB設定
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'name',
-        'USER': 'user',
-        'PASSWORD': '',
-        'HOST': 'host',
+        'NAME': 'dtvn6smssuuna',
+        'USER': '',
+        'PASSWORD': os.environ['PASSWORD'],
+        'HOST': '',
         'PORT': '',
     }
 }
