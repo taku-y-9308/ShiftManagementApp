@@ -7,13 +7,16 @@ jobs:
     docker: 
       - image: python:3.9.13
         environment:
-          POSTGRES_PASSWORD=admin
-          POSTGRES_USER=admin
+          POSTGRES_PASSWORD: admin
+          POSTGRES_USER: admin
       - image: circleci/postgres
         environment: 
-          POSTGRES_DB=dtvn6smssuuna
-          POSTGRES_USER=admin
-          POSTGRES_PASSWORD=admin
+          POSTGRES_DB: dtvn6smssuuna
+          POSTGRES_USER: admin
+          POSTGRES_PASSWORD: admin
+    environment: 
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin     
     steps: 
       - checkout
       - run: echo 'export EMAIL_HOST_PASSWORD=$EMAIL_HOST_PASSWORD'
