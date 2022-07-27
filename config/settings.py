@@ -95,8 +95,8 @@ DATABASES = {
         'NAME': 'dtvn6smssuuna',
         'USER': '',
         'PASSWORD': os.environ['PASSWORD'],
-        'HOST': '',
-        'PORT': '',
+        'HOST': 'localhost',
+        'PORT': '5432',
     }
 }
 
