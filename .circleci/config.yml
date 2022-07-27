@@ -6,6 +6,8 @@ jobs:
   create_test_postgres: 
     docker: 
       - image: python:3.9.13
+        environment:
+          PASSWORD: admin
       - image: circleci/postgres
         environment: 
           POSTGRES_DB: dtvn6smssuuna
