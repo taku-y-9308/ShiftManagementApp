@@ -8,9 +8,11 @@ jobs:
       - image: python:3.9.13
         environment:
           PASSWORD: admin
+          USER: admin
       - image: circleci/postgres
         environment: 
           POSTGRES_DB: dtvn6smssuuna
+          POSTGRES_USER: admin
           POSTGRES_PASSWORD: admin
     steps: 
       - checkout
