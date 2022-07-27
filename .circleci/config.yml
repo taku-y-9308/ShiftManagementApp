@@ -5,10 +5,10 @@ orbs:
 jobs: 
   create_test_postgres: 
     docker: 
+      - image: python:3.9.13
       - image: circleci/postgres
         environment: 
           POSTGRES_DB: dtvn6smssuuna
-      - image: python:3.9.13
     steps: 
       - checkout
       - run: echo 'export EMAIL_HOST_PASSWORD=$EMAIL_HOST_PASSWORD'
