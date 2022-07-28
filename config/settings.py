@@ -154,8 +154,8 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 db_from_env = dj_database_url.config(conn_max_age=0, ssl_require=False)
-django_heroku.settings(locals() ,databases=False)
 """
+django_heroku.settings(locals() ,databases=False)
 db_from_env = dj_database_url.config(conn_max_age=600)
 DATABASES['default'].update(db_from_env)
 """
@@ -167,4 +167,4 @@ except ImportError:
 if not DEBUG:
     SECRET_KEY = os.environ['SECRET_KEY']
     import django_heroku
-    django_heroku.settings(locals())
+    django_heroku.settings(locals(),databases=False)
