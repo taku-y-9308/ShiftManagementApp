@@ -18,5 +18,6 @@ https://shiftmanagementapp-heroku.herokuapp.com/
 **インフラ**
 - heroku
 
-![heroku-構成図 drawio-2](https://user-images.githubusercontent.com/66234583/174614077-86fcbcea-79b0-4c83-b77c-dd4a2bc48efb.svg)
+![heroku-構成図 drawio-3](https://user-images.githubusercontent.com/66234583/181699717-6acb5fab-522d-4e23-a7cf-1c7ce64012fa.svg)
+
 
