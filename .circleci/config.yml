@@ -14,7 +14,7 @@ jobs:
     environment: 
           DATABASE_URL: postgres://postgres:postgres@127.0.0.1:5432/dtvn6smssuuna
           EMAIL_HOST_PASSWORD: $EMAIL_HOST_PASSWORD
-          SECRET_KEY: SECRET_KEY
+          SECRET_KEY: $SECRET_KEY
 
     steps: 
       - checkout
