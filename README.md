@@ -23,6 +23,7 @@ https://shiftmanagementapp-heroku.herokuapp.com/
     - mainブランチへマージすることで自動テストを実行
     - 自動テストをパスすると、コンテナをビルドしてしてherokuへ自動デプロイを実行
   
-![heroku-構成図 drawio-3](https://user-images.githubusercontent.com/66234583/181699717-6acb5fab-522d-4e23-a7cf-1c7ce64012fa.svg)
+![heroku-構成図 drawio-4](https://user-images.githubusercontent.com/66234583/181701969-7c6c8834-0087-4244-88ef-eef51829c6c4.svg)
+
 
 
