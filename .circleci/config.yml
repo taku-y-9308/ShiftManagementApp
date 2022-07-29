@@ -22,6 +22,9 @@ jobs:
       - run: echo 'export EMAIL_HOST_PASSWORD=$EMAIL_HOST_PASSWORD'
       - run: echo 'export SECRET_KEY=$SECRET_KEY'
       - run: pip install -r requirements.txt
+      - run: python manage.py makemigrations
+      - run: python manage.py migrate
+      - run: python manage.py collectstatic --noinput
       - run: python3 manage.py test
 workflows: 
   create_test_postgres:
