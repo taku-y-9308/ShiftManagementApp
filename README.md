@@ -17,13 +17,15 @@ https://shiftmanagementapp-heroku.herokuapp.com/
   
 **インフラ**
 - heroku
+- Docker
   
 **その他**
 - CircleCI
     - mainブランチへマージすることで自動テストを実行
     - 自動テストをパスすると、コンテナをビルドしてしてherokuへ自動デプロイを実行
   
-![heroku-構成図 drawio-4](https://user-images.githubusercontent.com/66234583/181701969-7c6c8834-0087-4244-88ef-eef51829c6c4.svg)
+![heroku-構成図 drawio-5](https://user-images.githubusercontent.com/66234583/182010092-ee7b0867-3f60-4c5a-b25e-fec6b63126c0.svg)
+
 
 
 
