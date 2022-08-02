@@ -153,11 +153,11 @@ def submit_shift(request):
     #編集モードがTrueのユーザーは今月と来月を表示
     if request.user.is_edit_mode:
         start_date = get_first_date(now_JST,0)
-        end_date = get_last_date(now_JST,1)
+        end_date = get_last_date(now_JST,1) + datetime.timedelta(days=1) #FullCalendarはUTCで認識されてしまうため
     #それ以外のユーザーは来月のみ表示
     else:
         start_date = get_first_date(now_JST,1)
-        end_date = get_last_date(now_JST,1)     
+        end_date = get_last_date(now_JST,1) + datetime.timedelta(days=1) #FullCalendarはUTCで認識されてしまうため
     params = {
         'shift':arr2,
         'User':request.user,
