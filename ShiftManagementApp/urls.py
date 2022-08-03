@@ -17,6 +17,7 @@ urlpatterns = [
     path('edit-shift-Ajax/delete-shiftdata/',views.editshift_ajax_delete_shiftdata,name='edit-shift-Ajax-delete-shiftdata'),
     path('edit-shift/publish-shift/',views.edit_shift_publish_shift,name="edit-shift-publish-shift"),
     path('line/',views.line,name="line"),
+    path('account_linkage/',views.account_linkage,name="account_linkage"),
     path('edit-shift-mode/',views.edit_shift_mode,name='edit-shift-mode'),
     path('shift-list/',views.shift_list,name='shift-list'),
     path('shift-list-ajax/',views.shift_list_ajax,name='shift-list-ajax'),
