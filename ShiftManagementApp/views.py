@@ -580,7 +580,7 @@ def edit_shift_publish_shift(request):
         publish_end = datetime.datetime.strptime( publish_range['publish_shift_end'],'%Y-%m-%d') + datetime.timedelta(days=1)
 
         #公開範囲のShiftのpublishをTrueにする
-        Shift.objects.filter(date__gte=publish_start,date__lte=publish_end).update(publish=True)
+        Shift.objects.select_related('user').filter(date__gte=publish_start,date__lte=publish_end,user__shop_id=request.user.shop_id).update(publish=True)
 
         Publish_range.objects.update_or_create(
             id=1,
