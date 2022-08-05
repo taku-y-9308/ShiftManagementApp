@@ -73,7 +73,7 @@ class Shift(models.Model):
     begin = models.DateTimeField("begin")
     finish = models.DateTimeField("finish")
     position = models.BooleanField("position")
-    publish = models.BooleanField("publish",default=True)
+    publish = models.BooleanField("publish",default=False)
     def __str__(self):
         return str(self.date)
 
