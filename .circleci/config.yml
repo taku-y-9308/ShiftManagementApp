@@ -40,6 +40,7 @@ workflows:
           region: ap-northeast-1
           repo: django
           tag: latest
+          public-registry: true
           filters:
             branches:
               only:
