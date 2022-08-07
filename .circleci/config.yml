@@ -40,7 +40,6 @@ workflows:
           region: ap-northeast-1
           repo: django
           tag: latest
-          registry-id: $REGISTRY_ID
           filters:
             branches:
               only:
