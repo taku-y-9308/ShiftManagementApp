@@ -41,7 +41,8 @@ workflows:
           repo: django
           tag: latest
           filters:
-            only:
-              - main
+            branches:
+              only:
+                - main
           requires:
             - test
