@@ -1,9 +1,10 @@
 version: 2.1
 orbs: 
   heroku-container: pbrisbin/heroku-container@1.0.0
+  aws-ecr: circleci/aws-ecr@8.1.2
 
 jobs: 
-  create_test_postgres: 
+  test: 
     docker: 
       - image: python:3.9.13
       - image: circleci/postgres
@@ -26,7 +27,7 @@ jobs:
 workflows: 
   test_and_build:
     jobs: 
-      - create_test_postgres 
+      - test 
       - heroku-container/push-and-release:
           app-name: shiftmanagementapp-heroku
           filters: 
@@ -34,4 +35,8 @@ workflows:
               only: 
                 - main
           requires: 
-            - create_test_postgres
+            - test
+      - aws-ecr/build-and-push-image: 
+          region: ap-northeast-1
+          repo: django
+          tag: latest
