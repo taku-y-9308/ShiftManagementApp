@@ -3,5 +3,5 @@ db.sqlite3
 .DS_Store
 __pycache__/
 ShiftManagementApp/__pycache__/
-ShiftManagementApp/migrations/*.py
+ShiftManagementApp/migrations/
 config/local_settings.py
