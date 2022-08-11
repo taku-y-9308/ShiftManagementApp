@@ -151,5 +151,8 @@ except ImportError:
 
 if not DEBUG:
     SECRET_KEY = os.environ.get('SECRET_KEY')
-    import django_heroku
-    django_heroku.settings(locals(),databases=False)
+
+    #heroku用の設定なので、PLATFORMが明示的にAWSとわかっている時は実行しない
+    if os.environ.get('PLATFORM') != 'AWS':
+        import django_heroku
+        django_heroku.settings(locals(),databases=False)
