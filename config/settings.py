@@ -18,7 +18,7 @@ DEBUG = False
 
 
 
-ALLOWED_HOSTS = ['127.0.0.1', '.herokuapp.com','shiftmanagementapp.com']
+ALLOWED_HOSTS = ['127.0.0.1', '.herokuapp.com','shiftmanagementapp.com','localhost','gunicorn-django']
 
 #Email settings
 #AWS_ACCESS_KEY_ID = ""
