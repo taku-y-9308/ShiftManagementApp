@@ -19,6 +19,7 @@ DEBUG = False
 
 
 ALLOWED_HOSTS = ['127.0.0.1', '.herokuapp.com','shiftmanagementapp.com','localhost','gunicorn-django']
+CSRF_TRUSTED_ORIGINS= ['shiftmanagementapp.com']
 
 #Email settings
 #AWS_ACCESS_KEY_ID = ""
