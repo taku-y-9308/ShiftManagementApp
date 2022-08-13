@@ -43,7 +43,7 @@ heroku版: https://shiftmanagementapp-heroku.herokuapp.com
 **その他**
 - CircleCI
     - mainブランチへマージすることで自動テストを実行
-    - 自動テストをパスすると、コンテナをビルドしてしてherokuへ自動デプロイを実行
+    - 自動テストをパスすると、コンテナをビルドしてしてheroku,ECRへ自動デプロイを実行
 
 ![ecs-構成図 drawio-3](https://user-images.githubusercontent.com/66234583/184472486-99bb3297-5cb6-48c3-b30a-f76edaadac48.svg)
 
