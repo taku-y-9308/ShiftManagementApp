@@ -1,5 +1,6 @@
 # 概要
 シフト提出、編集、閲覧をスマホから簡単に行えるWebアプリです。  
+AWS版とheroku版を提供しております。  
 AWS版: https://shiftmanagementapp.com  
 heroku版: https://shiftmanagementapp-heroku.herokuapp.com
 # 特徴
