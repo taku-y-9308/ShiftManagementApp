@@ -1,3 +1,4 @@
+[![CircleCI](https://dl.circleci.com/status-badge/img/gh/taku-y-9308/ShiftManagementApp/tree/main.svg?style=svg)](https://dl.circleci.com/status-badge/redirect/gh/taku-y-9308/ShiftManagementApp/tree/main)  
 # 概要
 シフト提出、編集、閲覧をスマホから簡単に行えるWebアプリです。  
 AWS版とheroku版を提供しております。  
