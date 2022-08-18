@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', function draw_calender() {
 
     console.log(typeof(start_date));
     console.log(start_date);
-    var calendar = new FullCalendar.Calendar(calendarEl, {
+    calendar = new FullCalendar.Calendar(calendarEl, {
       validRange: {
           start: start_date,
           end: end_date

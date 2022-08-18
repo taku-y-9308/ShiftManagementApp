@@ -107,10 +107,10 @@ function view_shift_lists(){
                         start_date_object = new Date(res.data.shift_lists[person_i].shift_list[count].start);
                         end_date_object = new Date(res.data.shift_lists[person_i].shift_list[count].end);
 
-                        start_hour_str = start_date_object.getHours();
-                        start_minutes_str = start_date_object.getMinutes();
-                        end_hour_str = end_date_object.getHours();
-                        end_minutes_str = end_date_object.getMinutes();
+                        let start_hour_str = start_date_object.getHours();
+                        let start_minutes_str = start_date_object.getMinutes();
+                        let end_hour_str = end_date_object.getHours();
+                        let end_minutes_str = end_date_object.getMinutes();
 
                         //0埋め
                         start_hour_str = ('0' + start_hour_str).slice(-2);
