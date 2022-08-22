@@ -15,7 +15,19 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 DEBUG = False
 
-
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'INFO',
+    },
+}
 
 
 ALLOWED_HOSTS = ['127.0.0.1', '.herokuapp.com','shiftmanagementapp.com','localhost','gunicorn-django']
