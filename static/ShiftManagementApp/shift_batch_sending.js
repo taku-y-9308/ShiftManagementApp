@@ -58,7 +58,7 @@ function batch_sending(){
             })
             .catch((res)=>{
                 console.log(res);
-                alert('送信失敗しました。再読み込みして確認してください')
+                alert('選択された範囲のいずれかのシフト送信が失敗した可能性があります。再読み込みして送信されていないシフトを確認してください。')
             })
             .finally(()=>{
                 $('#batch_sending_Modal').modal('hide');
