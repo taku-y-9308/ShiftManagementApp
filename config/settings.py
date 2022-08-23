@@ -18,6 +18,12 @@ DEBUG = False
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
+    'formatters': {
+    '': {
+        '()': 'django.utils.log.ServerFormatter',
+        'format': '[%(server_time)s] %(message)s a',
+        }
+    },
     'handlers': {
         'console': {
             'class': 'logging.StreamHandler',
