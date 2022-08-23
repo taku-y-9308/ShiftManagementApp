@@ -113,6 +113,7 @@ function print_shift_lists(is_first_half_second_half){
 
                     let td = document.createElement('td'); //毎回定義しないと同じエレメントに上書きされる
 
+                    //今月一回もシフトに入っていない場合
                     if(count == res.data.shift_lists[person_i].shift_list.length){
                         td.innerHTML = ""
                     }
@@ -133,8 +134,43 @@ function print_shift_lists(is_first_half_second_half){
 
 
                         td.innerHTML = start_hour_str + ":" + start_minutes_str+ "〜" + end_hour_str + ":" + end_minutes_str;
+
+                        //countがshift_listの最後を示しているとき、count+1はundefinedとなるためその場合を避ける
+                        if(typeof res.data.shift_lists[person_i].shift_list[count+1] === 'undefined'){
+
+                        }else{
+                            while(new Date(res.data.shift_lists[person_i].shift_list[count].date).getTime() == new Date(res.data.shift_lists[person_i].shift_list[count+1].date).getTime()){
+                                start_date_object = new Date(res.data.shift_lists[person_i].shift_list[count+1].start);
+                                end_date_object = new Date(res.data.shift_lists[person_i].shift_list[count+1].end);
+        
+                                start_hour_str = start_date_object.getHours();
+                                start_minutes_str = start_date_object.getMinutes();
+                                end_hour_str = end_date_object.getHours();
+                                end_minutes_str = end_date_object.getMinutes();
+        
+                                //0埋め
+                                start_hour_str = ('0' + start_hour_str).slice(-2);
+                                start_minutes_str = ('0' + start_minutes_str).slice(-2);
+                                end_hour_str = ('0' + end_hour_str).slice(-2);
+                                end_minutes_str = ('0' + end_minutes_str).slice(-2);
+        
+        
+                                insert_date = '<br>-------<br>' + start_hour_str + ":" + start_minutes_str+ "〜" + end_hour_str + ":" + end_minutes_str;
+                                td.insertAdjacentHTML('beforeend',insert_date)
+                                
+                                count++;
+
+                                //whileループ中にcountがshift_listの最後を示した場合
+                                if(typeof res.data.shift_lists[person_i].shift_list[count+1] === 'undefined'){
+                                    break;
+                                }
+                            }
+
+                        }
+
                         count++;
                     }
+                    //今月1日以上シフトに入っているが、それが検索中の日付ではなかった場合
                     else{
                         td.innerHTML = "";
 
