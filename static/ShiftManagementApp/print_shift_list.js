@@ -181,7 +181,6 @@ function print_shift_lists(is_first_half_second_half){
                     if(is_first_half_second_half){
                         if(dt_start_date.getDate()<=15){
                             fragment.appendChild(td);
-                            console.log(dt_start_date);
                         }
                     }
                     else{
