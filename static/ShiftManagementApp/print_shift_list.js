@@ -176,25 +176,24 @@ function print_shift_lists(is_first_half_second_half){
 
                     }
 
-                    /**日付が並んでいないか判定
-                     * 日付なので、同じ月でsearch_date.getDate()>dt_last_date.getDate()となることはないため
-                     * breakして無限ループになるのを防ぐ*/
-                    if(dt_start_date.getDate() == dt_last_date.getDate()){
-                        fragment.appendChild(td);
-                        break;
-                    }
-
                     //前半表示：検索中の日付が15日以下ならHTMLに追加する
                     //後半表示：検索中の日付が16日以上ならHTMLに追加する
                     if(is_first_half_second_half){
                         if(dt_start_date.getDate()<=15){
                             fragment.appendChild(td);
+                            console.log(dt_start_date);
                         }
                     }
                     else{
                         if(dt_start_date.getDate()>=16){
                             fragment.appendChild(td);
                         }
+                    }
+                    /**日付が並んでいないか判定
+                     * 日付なので、同じ月でsearch_date.getDate()>dt_last_date.getDate()となることはないため
+                     * breakして無限ループになるのを防ぐ*/
+                    if(dt_start_date.getDate() == dt_last_date.getDate()){
+                        break;
                     }
                     
                     dt_start_date.setDate(dt_start_date.getDate()+1);

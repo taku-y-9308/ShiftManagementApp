@@ -159,17 +159,15 @@ function view_shift_lists(){
                         td.innerHTML = "";
 
                     }
+                    //console.log(count);
+                    fragment.appendChild(td);
 
                     /**日付が並んでいないか判定
                      * 日付なので、同じ月でsearch_date.getDate()>dt_last_date.getDate()となることはないため
                      * 無限ループになるのを防ぐ*/
                     if(search_date.getDate() == dt_last_date.getDate()){
-                        fragment.appendChild(td);
                         break;
                     }
-
-                    //console.log(count);
-                    fragment.appendChild(td);
                     search_date.setDate(search_date.getDate()+1);
                 }
 
