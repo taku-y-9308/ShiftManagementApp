@@ -28,6 +28,7 @@ function view_shift_lists(){
             let th_date_field_header = document.createElement('th');
             th_date_field_header.innerHTML = "#";
             thead_tr.appendChild(th_date_field_header);
+            th_date_field_header.classList.add('fixed01');
             const dayOfWeekStr = [ "日", "月", "火", "水", "木", "金", "土" ]
             
             /**祝日を判定するために祝日APIにGETする */
@@ -64,6 +65,7 @@ function view_shift_lists(){
                             th_date.innerHTML = dt_month + "/" + dt_date + "<br>" +dayOfWeekStr[dt_day];
                         }
                         thead_tr.appendChild(th_date);
+                        th_date.classList.add('fixed02');
                         selected_month.setDate(selected_month.getDate()+1);
                     }
 
@@ -74,6 +76,7 @@ function view_shift_lists(){
 
             const thead = document.createElement('thead');
             thead.appendChild(thead_tr);
+            thead.classList.add('sticky-top');
 
             tableEle.appendChild(thead);
             //console.log(end_date.getDate());
@@ -89,8 +92,9 @@ function view_shift_lists(){
                 const search_date = new Date(Date.parse(selected_month_str));;
 
                 th.innerHTML = res.data.shift_lists[person_i].username;
-                tr.appendChild(th)
-
+                th.classList.add('fixed02');
+                tr.appendChild(th);
+                
                 let count = 0;
                 let break_counter = 0;
 
