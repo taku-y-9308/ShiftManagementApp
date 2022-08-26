@@ -8,6 +8,7 @@ ShiftManagementApp
 {%block header%}
 <script src="{% static 'ShiftManagementApp/view_shift_list.js'%}"></script>
 <script src="{%static 'ShiftManagementApp/loading.js'%}"></script>
+<link href="{%static 'ShiftManagementApp/fix_columns_and_rows.css'%}" rel="stylesheet">
 {%endblock%}
 
 {% block contents%}
@@ -22,8 +23,8 @@ ShiftManagementApp
         <button type="button" class="btn btn-outline-primary mt-4" data-dismiss="modal" onclick="view_shift_lists();">表示</button>
     </form>
 
-<div class="table-responsive">
-    <table class="table table-bordered table-striped" id="data-table">
+<div class="table-responsive sticky-scroll">
+    <table class="table table-bordered table-striped sticky_table" id="data-table">
     </table>
 </div>
 
