@@ -14,5 +14,5 @@
   }],
   "name": "ShiftManager",
   "short_name": "ShiftManager",
-  "start_url": "https://shiftmanagementapp-heroku.herokuapp.com"
+  "start_url": "https://shiftmanagementapp-heroku.herokuapp.com?pwa=1"
 }
