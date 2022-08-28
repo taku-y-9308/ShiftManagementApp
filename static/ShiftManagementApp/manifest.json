@@ -12,7 +12,7 @@
     "sizes": "512x512",
     "type": "image/png"
   }],
-  "name": "shiftmanagementapp",
-  "short_name": "shiftmanagementapp",
+  "name": "ShiftManager",
+  "short_name": "ShiftManager",
   "start_url": "https://shiftmanagementapp-heroku.herokuapp.com"
 }
