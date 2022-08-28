@@ -1,3 +1,4 @@
+from itertools import product
 import json,datetime,secrets,calendar
 import re
 from asyncio import events
@@ -92,6 +93,15 @@ def create_newaccount(request):
 """
 @login_required
 def home(request):
+
+    #PWAとして使用しているユーザーを特定する
+    pwa_user = request.GET.get('pwa')
+
+    if pwa_user is None:
+        pass
+    elif pwa_user == '1':
+        User.objects.filter(id=request.user.id).update(is_pwa_user=True)
+
     arr2 = []
     shifts = Shift.objects.filter(user=request.user.id)
     for shift in shifts:
