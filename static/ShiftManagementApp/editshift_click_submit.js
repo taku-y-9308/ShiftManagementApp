@@ -1,4 +1,4 @@
-$(document).on('click','#submit-date',function show_timeline() {
+$(document).on('click','#submit-date',window.show_timeline =  function show_timeline() {
             
     axios.defaults.xsrfHeaderName = "X-CSRFTOKEN"
     axios.defaults.xsrfCookieName = "csrftoken"
@@ -6,6 +6,10 @@ $(document).on('click','#submit-date',function show_timeline() {
     $('#submit-date').off('click') //offでクリックイベントを削除することで複数登録を防ぐ
         dispLoading('Loading...');
         
+        //「新規シフト作成」ボタンを押した時に予めフォームに日付を入れるために、グローバル変数に代入 
+        //editshift_click_newshift.jsで使用
+        window.date_of_sending = $('#edit-date').val();
+
         axios
             .post("/edit-shift-Ajax/",{
                     "date":$('#edit-date').val()
