@@ -1,7 +1,11 @@
 $(document).on('click','#create-newshift',function () {
     axios.defaults.xsrfHeaderName = "X-CSRFTOKEN"
     axios.defaults.xsrfCookieName = "csrftoken"
+    
     $('#submit-newshift-date').val(window.date_of_sending);
+    $('#submit-newshift-start').val('');
+    $('#submit-newshift-end').val('');
+
     $('#submit-newshift-modal').modal('show');
     $('#submit-newshift').off('click');
     $('#submit-newshift').click(function(){
