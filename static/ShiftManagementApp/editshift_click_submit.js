@@ -1,3 +1,4 @@
+/**editshift_click_newshift.jsで使うためにshow_timeline()をグローバル変数に代入する*/
 $(document).on('click','#submit-date',window.show_timeline =  function show_timeline() {
             
     axios.defaults.xsrfHeaderName = "X-CSRFTOKEN"
