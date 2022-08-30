@@ -36,7 +36,6 @@ function batch_sending(){
         const date = ('0' + date_start.getDate()).slice(-2);
         const date_for_post = year+"-"+month+"-"+date;
 
-
         axios
             .post('/SubmitShift-Ajax/',{
                 'id':null,
@@ -62,7 +61,7 @@ function batch_sending(){
             })
             .finally(()=>{
                 $('#batch_sending_Modal').modal('hide');
-                removeLoading();                
+                removeLoading();              
             })
         
         date_start.setDate(date_start.getDate()+1);
