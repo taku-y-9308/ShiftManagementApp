@@ -9,6 +9,9 @@
       {%block title%}
       {%endblock%}
     </title>
+    <!--favicon,apple touch iconの設定-->
+    <link rel="icon" href="{% static 'ShiftManagementApp/favicon.jpeg' %}">
+    <link rel="apple-touch-icon" href="{% static 'ShiftManagementApp/favicon.jpeg' %}">
     <!-- Bootstrap CSS -->
 
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
@@ -28,6 +31,18 @@
     <script src='https://cdn.jsdelivr.net/npm/moment@2.27.0/min/moment.min.js'></script>
     
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"> 
+    
+    <!--PWA対応-->
+    <link rel="manifest" href="{% static 'ShiftManagementApp/manifest.json'%}">
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register("{% url 'sw.js' %}").then(
+              function(registration) { 
+                console.log('Service Worker Registered with scope:',registration.scope); 
+              });
+            }
+   </script>
+
 
     {% block header %}
     {% endblock %}

@@ -1,6 +1,11 @@
 $(document).on('click','#create-newshift',function () {
     axios.defaults.xsrfHeaderName = "X-CSRFTOKEN"
     axios.defaults.xsrfCookieName = "csrftoken"
+    
+    $('#submit-newshift-date').val(window.date_of_sending);
+    $('#submit-newshift-start').val('');
+    $('#submit-newshift-end').val('');
+
     $('#submit-newshift-modal').modal('show');
     $('#submit-newshift').off('click');
     $('#submit-newshift').click(function(){
@@ -19,7 +24,7 @@ $(document).on('click','#create-newshift',function () {
                 //alert('送信成功');
                 console.log($('#submit-newshift-date').val()+"T"+$('#submit-newshift-start').val())
                 $('#submit-newshift-modal').modal('hide');//modalを閉じる
-                alert('送信成功しました。もう一度送信ボタンを推して再読み込みしてください。')
+                window.show_timeline();
             })
             .catch(()=>{
                 alert('送信失敗しました');

@@ -1,5 +1,10 @@
+<<<<<<< HEAD
 from cmath import log
 import json,datetime,secrets,calendar,logging
+=======
+from itertools import product
+import json,datetime,secrets,calendar
+>>>>>>> 14bc04d455b011a34714a35b48b6b081b131fe9c
 import re
 from asyncio import events
 from curses import reset_prog_mode
@@ -102,6 +107,15 @@ def create_newaccount(request):
 """
 @login_required
 def home(request):
+
+    #PWAとして使用しているユーザーを特定する
+    pwa_user = request.GET.get('pwa')
+
+    if pwa_user is None:
+        pass
+    elif pwa_user == '1':
+        User.objects.filter(id=request.user.id).update(is_pwa_user=True)
+
     arr2 = []
     shifts = Shift.objects.filter(user=request.user.id)
     for shift in shifts:
@@ -663,7 +677,6 @@ def shift_list_ajax(request):
             """
             shifts = list(Shift.objects.filter(user=user,date__gte=selected_month_beginning,date__lte=selected_month_end).order_by('date'))
             print(f'selected_month_beginning:{selected_month_beginning_str} selected_month_end:{selected_month_end_str}')
-            print(shifts)
             shift_list_each_private['username'] = user.username
 
             #特定個人のシフトをすべてshift_list_indivisualに格納する

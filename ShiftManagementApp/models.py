@@ -43,6 +43,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_edit_mode =models.BooleanField("is_edit_mode",default=False) #編集モード:編集可能かどうかのステータス
     is_staff = models.BooleanField("staff status", default=False) #スタッフユーザー（管理者）かどうか
     is_active = models.BooleanField("active", default=False) #新規作成した時点では全員False
+    is_pwa_user = models.BooleanField("pwa_user", default=False) #新規作成した時点では全員False
     date_joined = models.DateTimeField("date joined", default=timezone.now) #アカウント作成日
 
     objects = UserManager()

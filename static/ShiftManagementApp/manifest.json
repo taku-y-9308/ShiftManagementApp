@@ -1,0 +1,18 @@
+{
+  "background_color": "#1f1f1f",
+  "description": "shiftmanagementapp",
+  "display": "standalone",
+  "theme_color": "aliceblue",
+  "icons": [{
+    "src": "icon-192x192.png",
+    "sizes": "192x192",
+    "type": "image/png"
+  },{
+    "src": "icon-512x512.png",
+    "sizes": "512x512",
+    "type": "image/png"
+  }],
+  "name": "ShiftManager",
+  "short_name": "ShiftManager",
+  "start_url": "https://shiftmanagementapp-heroku.herokuapp.com?pwa=1"
+}
