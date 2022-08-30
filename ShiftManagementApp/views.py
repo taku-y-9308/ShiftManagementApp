@@ -1,10 +1,5 @@
-<<<<<<< HEAD
 from cmath import log
 import json,datetime,secrets,calendar,logging
-=======
-from itertools import product
-import json,datetime,secrets,calendar
->>>>>>> 14bc04d455b011a34714a35b48b6b081b131fe9c
 import re
 from asyncio import events
 from curses import reset_prog_mode
