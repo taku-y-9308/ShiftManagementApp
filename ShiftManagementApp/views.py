@@ -1,5 +1,5 @@
-from itertools import product
-import json,datetime,secrets,calendar
+from cmath import log
+import json,datetime,secrets,calendar,logging
 import re
 from asyncio import events
 from curses import reset_prog_mode
@@ -25,6 +25,12 @@ from django.http import Http404
 from django.core.mail import EmailMultiAlternatives
 
 """
+ログレベルセット
+"""
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+
+"""
 ログイン
 """
 def Login(request):
@@ -40,6 +46,7 @@ def Login(request):
         if user:
             if user.is_active:
                 login(request,user)
+                logger.info(f'ログイン成功しました。userid:{request.user.id}')
                 if next == None:
                     return HttpResponseRedirect(reverse('ShiftManagementApp:index'))
                 else:
@@ -52,6 +59,7 @@ def Login(request):
                 }
                 return render(request,'ShiftManagementApp/login.html',params)
         else:
+            logger.info(f'ログイン失敗しました。 userid:{request.user.id}')
             error_message = "ログインIDまたはパスワードが違います"
             params = {
                 "error_message":error_message
@@ -71,7 +79,7 @@ def Login(request):
 @login_required
 def Logout(request):
     logout(request)
-    
+    logger.info(f'ログアウトしました。userid:{request.user.id}')
     return render(request, 'ShiftManagementApp/login.html')
 
 """
@@ -82,6 +90,7 @@ def create_newaccount(request):
         form = SignUpForm(request.POST)
         if form.is_valid():
             form.save()
+            logger.info(f'新規アカウントが作成されました。userid:{request.user.id}')
             return HttpResponseRedirect(reverse('ShiftManagementApp:Login'))
     #GETリクエスト時(通常のアクセス時) 
     else:
@@ -303,7 +312,7 @@ def contact_success(request):
     return render(request,'ShiftManagementApp/contact_success.html')
 
 """
-シフト締め切り後編集モードの設定画面
+【未使用】シフト締め切り後編集モードの設定画面
 """
 @login_required
 def edit_shift_mode(request):
@@ -338,20 +347,18 @@ def edit_shift_mode(request):
 def submitshift(request):
     if request.method == 'GET':
         raise Http404()
-    print(request.body)
     datas = json.loads(request.body)
-    print(datas)
-    print(f"startのtype:{type(datas['start'])}")
+    logger.info(f"シフトが送信されました。userid:{request.user.id} body:{datas}")
     start_str = f"{datas['date']}T{datas['start']}"
     start = datetime.datetime.strptime(start_str,'%Y-%m-%dT%H:%M')
     #print(f"start_str:{start_str},start:{start},type(start):{type(start)}")
     end_str = f"{datas['date']}T{datas['end']}"
     end = datetime.datetime.strptime(end_str,'%Y-%m-%dT%H:%M')
-    print(request.user.id)
     """
     編集可能期間または編集モードのときにシフトを編集できる
     """
     if (Judge_editable(start_str) == True or request.user.is_edit_mode == True):
+        logger.info("編集可能なシフトです")
 
         '''
         ShiftのidをカレンダーのIDとして渡す
@@ -369,7 +376,10 @@ def submitshift(request):
                 'position': default_position
             }
         )
-        print(product.id)
+        if created:
+            logger.info(f"DBの更新が正常に完了しました。product.id:{product.id}")
+        else:
+            logger.info(f"DBの更新が失敗しました。product.id{product.id}")
 
         events = Shift.objects.filter(user=request.user.id)
         response = []
@@ -378,7 +388,6 @@ def submitshift(request):
             'res_code':True,
             'shift_id':product.id
         })
-        print("編集可能")
         return JsonResponse(response,safe=False)
 
     #送信された日付が編集可能ではないとき
@@ -387,7 +396,7 @@ def submitshift(request):
         response.append({
             'res_code':False
         })
-        print("編集不可")
+        logger.info("このシフトは編集できません")
         return JsonResponse(response,safe=False)
 
 
@@ -404,7 +413,7 @@ def Judge_editable(date_str):
     t_delta = datetime.timedelta(hours=9)
     JST = datetime.timezone(t_delta, 'JST')
     dt_JST = datetime.datetime.now(JST)
-    print(date_str)
+    #print(date_str)
     #引数の日付をDate型に変換
     date = datetime.datetime.strptime(date_str+':00+0900','%Y-%m-%dT%H:%M:%S%z')
 
@@ -537,6 +546,7 @@ def editshift_ajax_delete_shiftdata(request):
     if request.method == 'GET':
         raise Http404()
     datas = json.loads(request.body)
+    delete_shift_id = datas['id']
     response = []
 
     #削除リクエストが管理ユーザの場合、無条件で削除実施
@@ -546,11 +556,12 @@ def editshift_ajax_delete_shiftdata(request):
             response.append({
                 'res_code':True
             })
+            logger.info(f'シフトが削除されました。 delete_shift_id:{delete_shift_id}')
         except Exception as e:
             response.append({
                 'res_code':False
             })
-            print(e)
+            logger.error(f'シフト削除に失敗しました。 reason:{e}')
         return JsonResponse(response,safe=False)
 
     #削除リクエストが一般ユーザーの場合、編集可能期間かどうかで可否を変える
@@ -567,12 +578,14 @@ def editshift_ajax_delete_shiftdata(request):
                 response.append({
                     'res_code':True
                 })
+                logger.info(f'シフトが削除されました。 delete_shift_id:{delete_shift_id}')
             except Exception as e:
-                print(e)
+                logger.error(f'シフト削除に失敗しました。 reason:{e}')
         else:
             response.append({
                 'res_code':False
             })
+            logger.info(f'編集可能期間外もしくは、編集モードでないためシフトを削除できませんでした. delete_shift_id:{delete_shift_id}')
         return JsonResponse(response,safe=False)
 
 """
@@ -600,6 +613,7 @@ def edit_shift_publish_shift(request):
 
             }
         )
+        logger.info(f'シフト公開範囲が設定されました。 終了日は-1日してください。 {publish_start}~{publish_end}')
     response = {}
     return JsonResponse(response)
 
@@ -743,9 +757,12 @@ def valid_invalid_change(request):
             current_bool =  bool(res['current_bool'])
             if target == 'is_active':
                 user = User.objects.filter(id=user_id).update(is_active=(not current_bool))
+                logger.info(f'ユーザーのis_activeが変更されました。userid:{user_id} {current_bool}→{not current_bool}')
             elif target == 'is_edit_mode':
                 user = User.objects.filter(id=user_id).update(is_edit_mode=(not current_bool))
+                logger.info(f'ユーザーのis_edit_modeが変更されました。userid:{user_id} {current_bool}→{not current_bool}')
             else:
+                logger.error(f'指定の値ではないtargetが送信されました userid:{user_id}')
                 return JsonResponse({"error_mes":"targetが指定の値ではありません"})
             
             return JsonResponse({"status_code":0})
