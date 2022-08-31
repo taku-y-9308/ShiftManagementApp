@@ -613,25 +613,33 @@ def edit_shift_publish_shift(request):
     if request.method == 'GET':
         raise Http404()
     if request.user.is_staff:
-        publish_range = json.loads(request.body)
-        publish_start = publish_range['publish_shift_start']
+        try:
+            publish_range = json.loads(request.body)
+            publish_start = publish_range['publish_shift_start']
 
-        #タイムゾーンの関係でカレンダーのendが１日少なく表示されてしまうため+1する
-        publish_end = datetime.datetime.strptime( publish_range['publish_shift_end'],'%Y-%m-%d') + datetime.timedelta(days=1)
+            #タイムゾーンの関係でカレンダーのendが１日少なく表示されてしまうため+1する
+            publish_end = datetime.datetime.strptime( publish_range['publish_shift_end'],'%Y-%m-%d') + datetime.timedelta(days=1)
 
-        #公開範囲のShiftのpublishをTrueにする
-        Shift.objects.select_related('user').filter(date__gte=publish_start,date__lte=publish_end,user__shop_id=request.user.shop_id).update(publish=True)
+            #公開範囲のShiftのpublishをTrueにする
+            Shift.objects.select_related('user').filter(date__gte=publish_start,date__lte=publish_end,user__shop_id=request.user.shop_id).update(publish=True)
 
-        Publish_range.objects.update_or_create(
-            id=1,
-            defaults={
-                'Publish_shift_start':publish_start,
-                'Publish_shift_end':publish_end
+            Publish_range.objects.update_or_create(
+                id=1,
+                defaults={
+                    'Publish_shift_start':publish_start,
+                    'Publish_shift_end':publish_end
 
-            }
-        )
-        logger.info(f'シフト公開範囲が設定されました。 終了日は-1日してください。 {publish_start}~{publish_end}')
-    response = {}
+                }
+            )
+            
+            #is_edit_modeがTrueになっているユーザーをFalseに変える
+            User.objects.filter(shop_id=request.user.shop_id,is_edit_mode=True).update(is_edit_mode=False)
+            logger.info(f'シフト公開範囲が設定されました。 終了日は-1日してください。 {publish_start}~{publish_end}')
+            res_code = True
+        except:
+            logger.info(f'シフト公開範囲の設定に失敗しました。 {publish_start}~{publish_end}')
+            res_code = False
+    response = {'res_code':res_code}
     return JsonResponse(response)
 
 """
