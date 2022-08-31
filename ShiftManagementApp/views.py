@@ -1,5 +1,5 @@
 from cmath import log
-import json,datetime,secrets,calendar,logging
+import json,datetime,secrets,calendar,logging,pytz
 import re
 from asyncio import events
 from curses import reset_prog_mode
@@ -518,6 +518,22 @@ def editshift_ajax_post_shiftdata(request):
             position = True
         else :
             position = False
+
+        #送信されたシフトが公開済みシフトの場合はPublish＝Trueにする
+        publish_range = Publish_range.objects.get(id=1)
+        publish_shift_start_native = datetime.datetime.combine(publish_range.Publish_shift_start,datetime.time())
+        publish_shift_end_native = datetime.datetime.combine(publish_range.Publish_shift_end,datetime.time())
+
+        #timezoneありに変換
+        publish_shift_start = pytz.timezone('Asia/Tokyo').localize(publish_shift_start_native)
+        publish_shift_end = pytz.timezone('Asia/Tokyo').localize(publish_shift_end_native)
+
+        if publish_shift_start <= datetime.datetime.strptime(datas['date']+"T00:00:00+0900",'%Y-%m-%dT%H:%M:%S%z') <= publish_shift_end:
+            logger.info("公開済み範囲のシフトが送信されました")
+            is_publish = True
+        else:
+            is_publish = False
+
         product,created = Shift.objects.update_or_create(
             id = id,
             defaults = {
@@ -525,7 +541,8 @@ def editshift_ajax_post_shiftdata(request):
                 'position': position,
                 'date':datas['date'],
                 'begin':datas['start'],
-                'finish':datas['end']
+                'finish':datas['end'],
+                'publish':is_publish
             }
         )
         print(product)
@@ -596,25 +613,33 @@ def edit_shift_publish_shift(request):
     if request.method == 'GET':
         raise Http404()
     if request.user.is_staff:
-        publish_range = json.loads(request.body)
-        publish_start = publish_range['publish_shift_start']
+        try:
+            publish_range = json.loads(request.body)
+            publish_start = publish_range['publish_shift_start']
 
-        #タイムゾーンの関係でカレンダーのendが１日少なく表示されてしまうため+1する
-        publish_end = datetime.datetime.strptime( publish_range['publish_shift_end'],'%Y-%m-%d') + datetime.timedelta(days=1)
+            #タイムゾーンの関係でカレンダーのendが１日少なく表示されてしまうため+1する
+            publish_end = datetime.datetime.strptime( publish_range['publish_shift_end'],'%Y-%m-%d') + datetime.timedelta(days=1)
 
-        #公開範囲のShiftのpublishをTrueにする
-        Shift.objects.select_related('user').filter(date__gte=publish_start,date__lte=publish_end,user__shop_id=request.user.shop_id).update(publish=True)
+            #公開範囲のShiftのpublishをTrueにする
+            Shift.objects.select_related('user').filter(date__gte=publish_start,date__lte=publish_end,user__shop_id=request.user.shop_id).update(publish=True)
 
-        Publish_range.objects.update_or_create(
-            id=1,
-            defaults={
-                'Publish_shift_start':publish_start,
-                'Publish_shift_end':publish_end
+            Publish_range.objects.update_or_create(
+                id=1,
+                defaults={
+                    'Publish_shift_start':publish_start,
+                    'Publish_shift_end':publish_end
 
-            }
-        )
-        logger.info(f'シフト公開範囲が設定されました。 終了日は-1日してください。 {publish_start}~{publish_end}')
-    response = {}
+                }
+            )
+            
+            #is_edit_modeがTrueになっているユーザーをFalseに変える
+            User.objects.filter(shop_id=request.user.shop_id,is_edit_mode=True).update(is_edit_mode=False)
+            logger.info(f'シフト公開範囲が設定されました。 終了日は-1日してください。 {publish_start}~{publish_end}')
+            res_code = True
+        except:
+            logger.info(f'シフト公開範囲の設定に失敗しました。 {publish_start}~{publish_end}')
+            res_code = False
+    response = {'res_code':res_code}
     return JsonResponse(response)
 
 """
