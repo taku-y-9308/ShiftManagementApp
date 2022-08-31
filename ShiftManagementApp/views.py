@@ -1,5 +1,5 @@
 from cmath import log
-import json,datetime,secrets,calendar,logging
+import json,datetime,secrets,calendar,logging,pytz
 import re
 from asyncio import events
 from curses import reset_prog_mode
@@ -518,6 +518,22 @@ def editshift_ajax_post_shiftdata(request):
             position = True
         else :
             position = False
+
+        #送信されたシフトが公開済みシフトの場合はPublish＝Trueにする
+        publish_range = Publish_range.objects.get(id=1)
+        publish_shift_start_native = datetime.datetime.combine(publish_range.Publish_shift_start,datetime.time())
+        publish_shift_end_native = datetime.datetime.combine(publish_range.Publish_shift_end,datetime.time())
+
+        #timezoneありに変換
+        publish_shift_start = pytz.timezone('Asia/Tokyo').localize(publish_shift_start_native)
+        publish_shift_end = pytz.timezone('Asia/Tokyo').localize(publish_shift_end_native)
+
+        if publish_shift_start <= datetime.datetime.strptime(datas['date']+"T00:00:00+0900",'%Y-%m-%dT%H:%M:%S%z') <= publish_shift_end:
+            logger.info("公開済み範囲のシフトが送信されました")
+            is_publish = True
+        else:
+            is_publish = False
+
         product,created = Shift.objects.update_or_create(
             id = id,
             defaults = {
@@ -525,7 +541,8 @@ def editshift_ajax_post_shiftdata(request):
                 'position': position,
                 'date':datas['date'],
                 'begin':datas['start'],
-                'finish':datas['end']
+                'finish':datas['end'],
+                'publish':is_publish
             }
         )
         print(product)
