@@ -17,8 +17,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 DEBUG = False
 SECRET_KEYは消す
 """
-DEBUG = True
-SECRET_KEY = os.environ.get('SECRET_KEY')
+DEBUG = False
+#SECRET_KEY = os.environ.get('SECRET_KEY')
 
 LOGGING = {
     'version': 1,
