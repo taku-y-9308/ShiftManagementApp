@@ -14,7 +14,8 @@ function view_shift_lists(){
 
     axios
         .post('/shift-list-ajax/',{
-            "selected_month": $('#selected_month').val()
+            "selected_month": $('#selected_month').val(),
+            "selected_table": $('#selected_table').val()
         })
         .then((res)=>{
             console.log(res);

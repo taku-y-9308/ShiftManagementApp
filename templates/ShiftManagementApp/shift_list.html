@@ -20,6 +20,12 @@ ShiftManagementApp
             <option value={{this_month_for_value}}>{{this_month_for_display}}</option>
             <option value={{next_month_for_value}}>{{next_month_for_display}}</option>
         </select>
+        <select class="form-select form-control mt-3" aria-label="Default select" id="selected_table">
+            <option value="none">表示するシフトを選択</option>
+            <option value="True">編集済みのシフト</option>
+            <option value="False">提出時のシフト</option>
+        </select>
+          
         <button type="button" class="btn btn-outline-primary mt-4" data-dismiss="modal" onclick="view_shift_lists();">表示</button>
     </form>
 

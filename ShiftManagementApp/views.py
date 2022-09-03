@@ -11,7 +11,7 @@ from tracemalloc import start
 from urllib import response
 from xmlrpc.client import boolean
 from django.views import generic
-from ShiftManagementApp.models import User,Shift,LINE_USER_ID,Publish_range
+from ShiftManagementApp.models import User,Shift,Shift_Archive,LINE_USER_ID,Publish_range
 from ShiftManagementApp.form import SubmitShift,SignUpForm,CreateAccount,ContactForm
 from django.urls import reverse,reverse_lazy
 from django.shortcuts import get_object_or_404, render,redirect
@@ -341,7 +341,7 @@ def edit_shift_mode(request):
     else:
         return HttpResponse('アクセス権がありません')
 """
-シフトの送信先
+通常のシフト送信先
 """
 @login_required
 def submitshift(request):
@@ -365,8 +365,10 @@ def submitshift(request):
         更新のときはIDを使って更新
         '''
         default_position = User.objects.get(id=request.user.id).default_position
+        
         #idがShiftに存在していたらupdate,id = nullだと存在しないためcreate
-        product,created = Shift.objects.update_or_create(
+        #メインDBテーブルに書き込む
+        product_of_main_table,created_of_main_table = Shift.objects.update_or_create(
             id = datas['id'],
             defaults = {
                 'user':request.user,
@@ -376,25 +378,54 @@ def submitshift(request):
                 'position': default_position
             }
         )
-        if created:
-            logger.info(f"DBの更新が正常に完了しました。product.id:{product.id}")
+
+        if created_of_main_table:
+            logger.info(f"メインテーブルの更新が正常に完了しました。product_of_main_table.id:{product_of_main_table.id}")
         else:
-            logger.info(f"DBの更新が失敗しました。product.id{product.id}")
+            logger.info(f"メインテーブルの更新が失敗しました。product_of_main_table.id:{product_of_main_table.id}")
+
+        #アーカイブテーブルに書き込む
+        product_of_archive_table,created_of_archive_table = Shift_Archive.objects.update_or_create(
+        id = datas['id'],
+        defaults = {
+                'user':request.user,
+                'date':datas['date'],
+                'begin':start,
+                'finish':end,
+                'position': default_position
+            }
+        )       
+
+        if created_of_archive_table:
+            logger.info(f"アーカイブテーブルの更新が正常に完了しました。product_of_archive_table.id:{product_of_archive_table.id}")
+        else:
+            logger.info(f"アーカイブテーブルの更新に失敗しました。product_of_archive_table.id:{product_of_archive_table.id}")
 
         events = Shift.objects.filter(user=request.user.id)
         response = []
-        #create または　updateしたオブジェクトのidを格納
-        response.append({
-            'res_code':True,
-            'shift_id':product.id
-        })
+        
+        #shift_idにはcreate または　updateしたオブジェクトのidを格納
+        #両テーブルの更新に成功した時
+        if created_of_main_table and created_of_archive_table:
+            response.append({
+                'res_code':True,
+                'shift_id':product_of_main_table.id
+            })
+        #どちらかのテーブル、または両テーブルの更新に失敗した場合
+        else:
+            response.append({
+                'res_code': False,
+                'error_code': 1,
+                'shift_id':product_of_main_table.id
+            })
         return JsonResponse(response,safe=False)
 
     #送信された日付が編集可能ではないとき
     else:
         response = []
         response.append({
-            'res_code':False
+            'res_code':False,
+            'error_code': 2
         })
         logger.info("このシフトは編集できません")
         return JsonResponse(response,safe=False)
@@ -676,6 +707,14 @@ def shift_list_ajax(request):
 
         res = json.loads(request.body)
         print(res["selected_month"])
+
+        #文字列のboolをbool型に変換する
+        #編集済みのシフト:True,提出時のシフト:False
+        if res['selected_table'] == 'True':
+            type_of_shift_table = True
+        elif res['selected_table'] == 'False':
+            type_of_shift_table = False
+
         dt = datetime.datetime.strptime(res["selected_month"],'%Y-%m-%d')
         selected_month_beginning = dt
         selected_month_end = datetime.date(dt.year,dt.month+1,1) - datetime.timedelta(days=1)
@@ -685,7 +724,6 @@ def shift_list_ajax(request):
 
 
         users= User.objects.filter(shop_id=request.user.shop_id)
-
         #すべてのユーザーのシフトをjson_total_shift_storedに格納する
         for user in users:
             shift_list_each_private = {} #個人ごとのシフトリストを格納
@@ -695,7 +733,14 @@ def shift_list_ajax(request):
             dateオブジェクトでも文字列でもいけるが、どっちにする？
             タイムゾーン考慮する
             """
-            shifts = list(Shift.objects.filter(user=user,date__gte=selected_month_beginning,date__lte=selected_month_end).order_by('date'))
+            """
+            選択されたshift_tableのタイプ(編集済みのシフトと提出時のシフト)によって取得するシフトを変える
+            """
+            if type_of_shift_table:
+                shifts = list(Shift.objects.filter(user=user,date__gte=selected_month_beginning,date__lte=selected_month_end).order_by('date'))
+            else:
+                shifts = list(Shift_Archive.objects.filter(user=user,date__gte=selected_month_beginning,date__lte=selected_month_end).order_by('date'))
+
             print(f'selected_month_beginning:{selected_month_beginning_str} selected_month_end:{selected_month_end_str}')
             shift_list_each_private['username'] = user.username
 

@@ -78,6 +78,20 @@ class Shift(models.Model):
     def __str__(self):
         return str(self.date)
 
+
+"""
+提出時のシフトを後から確認できるように、提出時のシフトを別テーブルに保存しておく
+"""
+class Shift_Archive(models.Model):
+    user = models.ForeignKey(User,on_delete=models.CASCADE,verbose_name="ユーザーID",related_name='shift_archive')
+    date = models.DateField("date")
+    begin = models.DateTimeField("begin")
+    finish = models.DateTimeField("finish")
+    position = models.BooleanField("position")
+    publish = models.BooleanField("publish",default=False)
+    def __str__(self):
+        return str(self.date)
+
     '''
     class User(models.Model):
     user_id = models.IntegerField(verbose_name="ユーザーID")
