@@ -80,8 +80,15 @@ document.addEventListener('DOMContentLoaded', function draw_calender() {
                           eventData = res.data
                           alert("送信されました")
                       }else{
-                          console.log('else')
-                          alert("編集可能期間が過ぎているため編集できません")
+                        if (res.data[0]['error_code']==1){
+                            console.log("error_code:1");
+                            alert("データベースの更新に失敗しました。再送してください。")
+                        }else if(res.data[0]['error_code']==2){
+                              console.log("error_code:2")
+                              alert("編集可能期間外のため編集できません");
+                        }else{
+                              alert("何らかの理由により送信失敗しました。error_code:else");
+                        }
                       }
                       
                   })

@@ -1,5 +1,6 @@
 from cmath import log
 import json,datetime,secrets,calendar,logging,pytz
+from sre_constants import SUCCESS
 import re
 from asyncio import events
 from curses import reset_prog_mode
@@ -367,38 +368,42 @@ def submitshift(request):
         default_position = User.objects.get(id=request.user.id).default_position
         
         #idがShiftに存在していたらupdate,id = nullだと存在しないためcreate
+        
+        #DBの成功数をカウントする
+        success_count = 0
         #メインDBテーブルに書き込む
-        product_of_main_table,created_of_main_table = Shift.objects.update_or_create(
-            id = datas['id'],
-            defaults = {
-                'user':request.user,
-                'date':datas['date'],
-                'begin':start,
-                'finish':end,
-                'position': default_position
-            }
-        )
-
-        if created_of_main_table:
+        try:
+            product_of_main_table,created_of_main_table = Shift.objects.update_or_create(
+                id = datas['id'],
+                defaults = {
+                    'user':request.user,
+                    'date':datas['date'],
+                    'begin':start,
+                    'finish':end,
+                    'position': default_position
+                }
+            )
             print(f"[INFO]メインテーブルの更新が正常に完了しました。product_of_main_table.id:{product_of_main_table.id}")
-        else:
+            success_count +=1
+        except:
             print(f"[INFO]メインテーブルの更新が失敗しました。product_of_main_table.id:{product_of_main_table.id}")
+            
 
         #アーカイブテーブルに書き込む
-        product_of_archive_table,created_of_archive_table = Shift_Archive.objects.update_or_create(
-        id = datas['id'],
-        defaults = {
-                'user':request.user,
-                'date':datas['date'],
-                'begin':start,
-                'finish':end,
-                'position': default_position
-            }
-        )       
-
-        if created_of_archive_table:
+        try:
+            product_of_archive_table,created_of_archive_table = Shift_Archive.objects.update_or_create(
+            id = datas['id'],
+            defaults = {
+                    'user':request.user,
+                    'date':datas['date'],
+                    'begin':start,
+                    'finish':end,
+                    'position': default_position
+                }
+            )
             print(f"[INFO]アーカイブテーブルの更新が正常に完了しました。product_of_archive_table.id:{product_of_archive_table.id}")
-        else:
+            success_count +=1
+        except:
             print(f"[INFO]アーカイブテーブルの更新に失敗しました。product_of_archive_table.id:{product_of_archive_table.id}")
 
         events = Shift.objects.filter(user=request.user.id)
@@ -406,7 +411,7 @@ def submitshift(request):
         
         #shift_idにはcreate または　updateしたオブジェクトのidを格納
         #両テーブルの更新に成功した時
-        if created_of_main_table and created_of_archive_table:
+        if success_count == 2:
             response.append({
                 'res_code':True,
                 'shift_id':product_of_main_table.id
