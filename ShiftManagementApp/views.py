@@ -46,7 +46,7 @@ def Login(request):
         if user:
             if user.is_active:
                 login(request,user)
-                logger.info(f'ログイン成功しました。userid:{request.user.id}')
+                print(f'[INFO]ログイン成功しました。userid:{request.user.id}')
                 if next == None:
                     return HttpResponseRedirect(reverse('ShiftManagementApp:index'))
                 else:
@@ -59,7 +59,7 @@ def Login(request):
                 }
                 return render(request,'ShiftManagementApp/login.html',params)
         else:
-            logger.info(f'ログイン失敗しました。 userid:{request.user.id}')
+            print(f'[INFO]ログイン失敗しました。 userid:{request.user.id}')
             error_message = "ログインIDまたはパスワードが違います"
             params = {
                 "error_message":error_message
@@ -79,7 +79,7 @@ def Login(request):
 @login_required
 def Logout(request):
     logout(request)
-    logger.info(f'ログアウトしました。userid:{request.user.id}')
+    print(f'[INFO]ログアウトしました。userid:{request.user.id}')
     return render(request, 'ShiftManagementApp/login.html')
 
 """
@@ -90,7 +90,7 @@ def create_newaccount(request):
         form = SignUpForm(request.POST)
         if form.is_valid():
             form.save()
-            logger.info(f'新規アカウントが作成されました。userid:{request.user.id}')
+            print(f'[INFO]新規アカウントが作成されました。userid:{request.user.id}')
             return HttpResponseRedirect(reverse('ShiftManagementApp:Login'))
     #GETリクエスト時(通常のアクセス時) 
     else:
@@ -348,7 +348,7 @@ def submitshift(request):
     if request.method == 'GET':
         raise Http404()
     datas = json.loads(request.body)
-    logger.info(f"シフトが送信されました。userid:{request.user.id} body:{datas}")
+    print(f"[INFO]シフトが送信されました。userid:{request.user.id} body:{datas}")
     start_str = f"{datas['date']}T{datas['start']}"
     start = datetime.datetime.strptime(start_str,'%Y-%m-%dT%H:%M')
     #print(f"start_str:{start_str},start:{start},type(start):{type(start)}")
@@ -358,7 +358,7 @@ def submitshift(request):
     編集可能期間または編集モードのときにシフトを編集できる
     """
     if (Judge_editable(start_str) == True or request.user.is_edit_mode == True):
-        logger.info("編集可能なシフトです")
+        print("[INFO]編集可能なシフトです")
 
         '''
         ShiftのidをカレンダーのIDとして渡す
@@ -380,9 +380,9 @@ def submitshift(request):
         )
 
         if created_of_main_table:
-            logger.info(f"メインテーブルの更新が正常に完了しました。product_of_main_table.id:{product_of_main_table.id}")
+            print(f"[INFO]メインテーブルの更新が正常に完了しました。product_of_main_table.id:{product_of_main_table.id}")
         else:
-            logger.info(f"メインテーブルの更新が失敗しました。product_of_main_table.id:{product_of_main_table.id}")
+            print(f"[INFO]メインテーブルの更新が失敗しました。product_of_main_table.id:{product_of_main_table.id}")
 
         #アーカイブテーブルに書き込む
         product_of_archive_table,created_of_archive_table = Shift_Archive.objects.update_or_create(
@@ -397,9 +397,9 @@ def submitshift(request):
         )       
 
         if created_of_archive_table:
-            logger.info(f"アーカイブテーブルの更新が正常に完了しました。product_of_archive_table.id:{product_of_archive_table.id}")
+            print(f"[INFO]アーカイブテーブルの更新が正常に完了しました。product_of_archive_table.id:{product_of_archive_table.id}")
         else:
-            logger.info(f"アーカイブテーブルの更新に失敗しました。product_of_archive_table.id:{product_of_archive_table.id}")
+            print(f"[INFO]アーカイブテーブルの更新に失敗しました。product_of_archive_table.id:{product_of_archive_table.id}")
 
         events = Shift.objects.filter(user=request.user.id)
         response = []
@@ -427,7 +427,7 @@ def submitshift(request):
             'res_code':False,
             'error_code': 2
         })
-        logger.info("このシフトは編集できません")
+        print("[INFO]編集可能でないシフトです")
         return JsonResponse(response,safe=False)
 
 
@@ -486,7 +486,7 @@ def editshift_ajax(request):
 
     json_data = json.loads(request.body)
     date = json_data['date']
-    print(json_data)
+    #print(json_data)
 
     arr2 = []
     
@@ -500,7 +500,7 @@ def editshift_ajax(request):
         #管理ユーザーと同じshop_idのシフトのみ表示（他店のシフトは表示しない）
         if shift.user.shop_id == request.user.shop_id:
             name = User.objects.get(id=shift.user.id).username
-            print(name)
+            #print(name)
             #positionによってバーに適用する色を変える
             position = shift.position
             if position == True:
@@ -542,7 +542,7 @@ def editshift_ajax_post_shiftdata(request):
         #新規作成のときはmemberにuserをPKから参照
         else:
             user = User.objects.get(id=datas['member'])
-        print(user)
+        #print(user)
 
         #str→bool型に変換
         if datas['position'] == 'True':
@@ -560,9 +560,10 @@ def editshift_ajax_post_shiftdata(request):
         publish_shift_end = pytz.timezone('Asia/Tokyo').localize(publish_shift_end_native)
 
         if publish_shift_start <= datetime.datetime.strptime(datas['date']+"T00:00:00+0900",'%Y-%m-%dT%H:%M:%S%z') <= publish_shift_end:
-            logger.info("公開済み範囲のシフトが送信されました")
+            print("[INFO]公開済み範囲のシフトが送信されました")
             is_publish = True
         else:
+            print("[INFO]公開済み範囲外のシフトが送信されました")
             is_publish = False
 
         product,created = Shift.objects.update_or_create(
@@ -576,13 +577,16 @@ def editshift_ajax_post_shiftdata(request):
                 'publish':is_publish
             }
         )
-        print(product)
-        print(created)
+        if created:
+            print(f'[INFO]DBへの登録に成功しました product.id:{product.id}')
+        else:
+            print(f'[INFO]DBへの登録に失敗しました product.id:{product.id}')
 
         return JsonResponse({'':''})
 
     #staffユーザーではない場合
     else:
+        print(f'[INFO]staffユーザーではないユーザーがシフト編集画面にアクセスしました。user_id:{request.user.id}')
         return HttpResponse('アクセス権がありません')
 
 '''
@@ -604,12 +608,12 @@ def editshift_ajax_delete_shiftdata(request):
             response.append({
                 'res_code':True
             })
-            logger.info(f'シフトが削除されました。 delete_shift_id:{delete_shift_id}')
+            print(f'[INFO]シフトが削除されました。 delete_shift_id:{delete_shift_id}')
         except Exception as e:
             response.append({
                 'res_code':False
             })
-            logger.error(f'シフト削除に失敗しました。 reason:{e}')
+            print(f'[INFO][ERROR]シフト削除に失敗しました。 reason:{e}')
         return JsonResponse(response,safe=False)
 
     #削除リクエストが一般ユーザーの場合、編集可能期間かどうかで可否を変える
@@ -626,14 +630,14 @@ def editshift_ajax_delete_shiftdata(request):
                 response.append({
                     'res_code':True
                 })
-                logger.info(f'シフトが削除されました。 delete_shift_id:{delete_shift_id}')
+                print(f'[INFO]シフトが削除されました。 delete_shift_id:{delete_shift_id}')
             except Exception as e:
-                logger.error(f'シフト削除に失敗しました。 reason:{e}')
+                print(f'[INFO]シフト削除に失敗しました。 reason:{e}')
         else:
             response.append({
                 'res_code':False
             })
-            logger.info(f'編集可能期間外もしくは、編集モードでないためシフトを削除できませんでした. delete_shift_id:{delete_shift_id}')
+            print(f'[INFO]編集可能期間外もしくは、編集モードでないためシフトを削除できませんでした. delete_shift_id:{delete_shift_id}')
         return JsonResponse(response,safe=False)
 
 """
@@ -665,13 +669,19 @@ def edit_shift_publish_shift(request):
             
             #is_edit_modeがTrueになっているユーザーをFalseに変える
             User.objects.filter(shop_id=request.user.shop_id,is_edit_mode=True).update(is_edit_mode=False)
-            logger.info(f'シフト公開範囲が設定されました。 終了日は-1日してください。 {publish_start}~{publish_end}')
+            print(f'[INFO]シフト公開範囲が設定されました。 終了日は-1日してください。 {publish_start}~{publish_end}')
             res_code = True
         except:
-            logger.info(f'シフト公開範囲の設定に失敗しました。 {publish_start}~{publish_end}')
+            print(f'[ERROR]シフト公開範囲の設定に失敗しました。 {publish_start}~{publish_end}')
             res_code = False
+
+    else:
+        res_code = False
+        print(f'staffユーザーではないユーザーによるアクセスがありました。 user_id:{request.user.id}')
+
     response = {'res_code':res_code}
     return JsonResponse(response)
+
 
 """
 シフト一覧表表示用
@@ -693,6 +703,7 @@ def shift_list(request):
         }
         return render(request,'ShiftManagementApp/shift_list.html',params)
     else:
+        print(f'staffユーザーではないユーザーによるアクセスがありました。 user_id:{request.user.id}')
         return HttpResponse('アクセス権がありません')
 
 
@@ -706,7 +717,7 @@ def shift_list_ajax(request):
         tmp_arr2 = []
 
         res = json.loads(request.body)
-        print(res["selected_month"])
+        #print(res["selected_month"])
 
         #文字列のboolをbool型に変換する
         #編集済みのシフト:True,提出時のシフト:False
@@ -741,7 +752,7 @@ def shift_list_ajax(request):
             else:
                 shifts = list(Shift_Archive.objects.filter(user=user,date__gte=selected_month_beginning,date__lte=selected_month_end).order_by('date'))
 
-            print(f'selected_month_beginning:{selected_month_beginning_str} selected_month_end:{selected_month_end_str}')
+            print(f'[INFO]selected_month_beginning:{selected_month_beginning_str} selected_month_end:{selected_month_end_str}')
             shift_list_each_private['username'] = user.username
 
             #特定個人のシフトをすべてshift_list_indivisualに格納する
@@ -760,6 +771,7 @@ def shift_list_ajax(request):
 
         return JsonResponse(json_total_shift_stored)
     else:
+        print(f'staffユーザーではないユーザーによるアクセスがありました。 user_id:{request.user.id}')
         return HttpResponse('アクセス権がありません')
 
 """
@@ -782,6 +794,7 @@ def shift_list_print(request):
         }
         return render(request,'ShiftManagementApp/shift_list_print.html',params)
     else:
+        print(f'staffユーザーではないユーザーによるアクセスがありました。 user_id:{request.user.id}')
         return HttpResponse('アクセス権がありません')
 
 """
@@ -812,7 +825,8 @@ def account_setting(request):
             
         #一般ユーザーの場合
         else:
-           return JsonResponse({"error_mes":"アクセス権限がありません"})
+            print(f'staffユーザーではないユーザーによるアクセスがありました。 user_id:{request.user.id}')
+            return JsonResponse({"error_mes":"アクセス権限がありません"})
 
 """
 指定カラムのbool値を変更する
@@ -827,16 +841,17 @@ def valid_invalid_change(request):
             current_bool =  bool(res['current_bool'])
             if target == 'is_active':
                 user = User.objects.filter(id=user_id).update(is_active=(not current_bool))
-                logger.info(f'ユーザーのis_activeが変更されました。userid:{user_id} {current_bool}→{not current_bool}')
+                print(f'[INFO]ユーザーのis_activeが変更されました。userid:{user_id} {current_bool}→{not current_bool}')
             elif target == 'is_edit_mode':
                 user = User.objects.filter(id=user_id).update(is_edit_mode=(not current_bool))
-                logger.info(f'ユーザーのis_edit_modeが変更されました。userid:{user_id} {current_bool}→{not current_bool}')
+                print(f'[INFO]ユーザーのis_edit_modeが変更されました。userid:{user_id} {current_bool}→{not current_bool}')
             else:
-                logger.error(f'指定の値ではないtargetが送信されました userid:{user_id}')
+                print(f'[INFO]指定の値ではないtargetが送信されました userid:{user_id}')
                 return JsonResponse({"error_mes":"targetが指定の値ではありません"})
             
             return JsonResponse({"status_code":0})
     else:
+        print(f'staffユーザーではないユーザーによるアクセスがありました。 user_id:{request.user.id}')
         raise Http404()
 
 
