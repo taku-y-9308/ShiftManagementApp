@@ -1,7 +1,12 @@
 function view_shift_lists(){
 
     if($('#selected_month').val()=='none'){
-        alert('月を選択してください')
+        alert('表示する月を選択してください');
+        return 0
+    }
+    if($('#selected_table').val()=='none'){
+        alert('表示するシフトを選択してください');
+        return 0
     }
     dispLoading('Loading...');
     const tableEle = document.getElementById('data-table');
