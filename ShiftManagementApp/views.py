@@ -732,7 +732,9 @@ def shift_list_ajax(request):
             type_of_shift_table = True
         elif res['selected_table'] == 'False':
             type_of_shift_table = False
-
+        else:
+            type_of_shift_table = None
+        
         dt = datetime.datetime.strptime(res["selected_month"],'%Y-%m-%d')
         selected_month_beginning = dt
         selected_month_end = datetime.date(dt.year,dt.month+1,1) - datetime.timedelta(days=1)
@@ -756,8 +758,10 @@ def shift_list_ajax(request):
             """
             if type_of_shift_table:
                 shifts = list(Shift.objects.filter(user=user,date__gte=selected_month_beginning,date__lte=selected_month_end).order_by('date'))
-            else:
+            elif type_of_shift_table == False:
                 shifts = list(Shift_Archive.objects.filter(user=user,date__gte=selected_month_beginning,date__lte=selected_month_end).order_by('date'))
+            else:
+                pass
 
             print(f'[INFO]selected_month_beginning:{selected_month_beginning_str} selected_month_end:{selected_month_end_str}')
             shift_list_each_private['username'] = user.username
