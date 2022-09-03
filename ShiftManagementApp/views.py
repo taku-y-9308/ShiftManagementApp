@@ -385,8 +385,8 @@ def submitshift(request):
             )
             print(f"[INFO]メインテーブルの更新が正常に完了しました。product_of_main_table.id:{product_of_main_table.id}")
             success_count +=1
-        except:
-            print(f"[INFO]メインテーブルの更新が失敗しました。product_of_main_table.id:{product_of_main_table.id}")
+        except Exception as e:
+            print(f"[ERROR]メインテーブルの更新が失敗しました。product_of_main_table.id:{product_of_main_table.id} reason:{e}")
             
 
         #アーカイブテーブルに書き込む
@@ -403,8 +403,8 @@ def submitshift(request):
             )
             print(f"[INFO]アーカイブテーブルの更新が正常に完了しました。product_of_archive_table.id:{product_of_archive_table.id}")
             success_count +=1
-        except:
-            print(f"[INFO]アーカイブテーブルの更新に失敗しました。product_of_archive_table.id:{product_of_archive_table.id}")
+        except Exception as e:
+            print(f"[ERROR]アーカイブテーブルの更新に失敗しました。product_of_archive_table.id:{product_of_archive_table.id} reason:{e}")
 
         events = Shift.objects.filter(user=request.user.id)
         response = []
@@ -571,23 +571,25 @@ def editshift_ajax_post_shiftdata(request):
             print("[INFO]公開済み範囲外のシフトが送信されました")
             is_publish = False
 
-        product,created = Shift.objects.update_or_create(
-            id = id,
-            defaults = {
-                'user':user,
-                'position': position,
-                'date':datas['date'],
-                'begin':datas['start'],
-                'finish':datas['end'],
-                'publish':is_publish
-            }
-        )
-        if created:
+        try:
+            product,created = Shift.objects.update_or_create(
+                id = id,
+                defaults = {
+                    'user':user,
+                    'position': position,
+                    'date':datas['date'],
+                    'begin':datas['start'],
+                    'finish':datas['end'],
+                    'publish':is_publish
+                }
+            )
             print(f'[INFO]DBへの登録に成功しました product.id:{product.id}')
-        else:
-            print(f'[INFO]DBへの登録に失敗しました product.id:{product.id}')
+            res_code = True
+        except Exception as e:
+            print(f'[ERROR]DBへの登録に失敗しました product.id:{product.id} reason:{e}')
+            res_code = False
 
-        return JsonResponse({'':''})
+        return JsonResponse({'res_code':res_code})
 
     #staffユーザーではない場合
     else:
@@ -618,7 +620,7 @@ def editshift_ajax_delete_shiftdata(request):
             response.append({
                 'res_code':False
             })
-            print(f'[INFO][ERROR]シフト削除に失敗しました。 reason:{e}')
+            print(f'[ERROR]シフト削除に失敗しました。 reason:{e}')
         return JsonResponse(response,safe=False)
 
     #削除リクエストが一般ユーザーの場合、編集可能期間かどうかで可否を変える
@@ -637,7 +639,7 @@ def editshift_ajax_delete_shiftdata(request):
                 })
                 print(f'[INFO]シフトが削除されました。 delete_shift_id:{delete_shift_id}')
             except Exception as e:
-                print(f'[INFO]シフト削除に失敗しました。 reason:{e}')
+                print(f'[ERROR]シフト削除に失敗しました。 reason:{e}')
         else:
             response.append({
                 'res_code':False
@@ -676,8 +678,8 @@ def edit_shift_publish_shift(request):
             User.objects.filter(shop_id=request.user.shop_id,is_edit_mode=True).update(is_edit_mode=False)
             print(f'[INFO]シフト公開範囲が設定されました。 終了日は-1日してください。 {publish_start}~{publish_end}')
             res_code = True
-        except:
-            print(f'[ERROR]シフト公開範囲の設定に失敗しました。 {publish_start}~{publish_end}')
+        except Exception as e:
+            print(f'[ERROR]シフト公開範囲の設定に失敗しました。 {publish_start}~{publish_end} reason:{e}')
             res_code = False
 
     else:

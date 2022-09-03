@@ -101,9 +101,12 @@ $(document).on('click','#submit-date',window.show_timeline =  function show_time
                                     "end":$('#edit-date').val()+"T"+$('#end').val()
                                 })
                                 .then((res)=>{
-                                    //alert('送信成功');
-                                    $('#testModal').modal('hide');//modalを閉じる
-                                    show_timeline();//シフト表再描画させる
+                                    if(res.data.res_code){
+                                        $('#testModal').modal('hide');//modalを閉じる
+                                        show_timeline();//シフト表再描画させる
+                                    }else{
+                                        alert('データベースの更新に失敗しました');
+                                    }
                                 })
                                 .catch((error)=>{
                                     alert('送信失敗しました');
