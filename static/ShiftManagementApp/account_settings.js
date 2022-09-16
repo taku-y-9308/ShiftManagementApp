@@ -19,6 +19,7 @@ function account_setting() {
                 const td_default_position = document.createElement('td');
                 const td_is_active = document.createElement('td');
                 const td_is_edit_mode = document.createElement('td');
+                const td_is_delete = document.createElement('td');
                 
                 td_user_id.innerHTML = res.data[i_person].user_id;
                 tr.appendChild(td_user_id);
@@ -56,6 +57,22 @@ function account_setting() {
                     valid_invalid_change(res.data[i_person].user_id,'is_edit_mode',res.data[i_person].is_edit_mode);
                 }
                 tr.appendChild(td_is_edit_mode);
+
+                /**ユーザーを削除するボタンを表示 */
+                td_is_delete.innerHTML = '<img src="/static/ShiftManagementApp/delete_icon.svg" width="35px">'
+                td_is_delete.onclick = function(){
+                    const confirm_mes = '<p>本当に削除しますか？</p><p>ユーザーを削除すると関連するシフトも完全に削除されます</p><p><span style="color:red;"><b>※削除したアカウントは復元できません</b></span></p>'
+                    bootbox.confirm(confirm_mes, function (result) {
+                        if (result) {
+                            valid_invalid_change(res.data[i_person].user_id,'is_delete',true);
+                        } else {
+                        }
+                    });
+                    //const delete_confilm = confirm('削除しますか？')
+                    //valid_invalid_change(res.data[i_person].user_id,'is_delete',true);
+                }
+
+                tr.appendChild(td_is_delete);
 
                 tbody.appendChild(tr);
                 
