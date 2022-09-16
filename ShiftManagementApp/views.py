@@ -841,6 +841,8 @@ def account_setting(request):
 
 """
 指定カラムのbool値を変更する
+または
+特定ユーザーを削除する
 """
 @login_required
 def valid_invalid_change(request):
@@ -856,6 +858,9 @@ def valid_invalid_change(request):
             elif target == 'is_edit_mode':
                 user = User.objects.filter(id=user_id).update(is_edit_mode=(not current_bool))
                 print(f'[INFO]ユーザーのis_edit_modeが変更されました。userid:{user_id} {current_bool}→{not current_bool}')
+            elif target == 'is_delete':
+                user = User.objects.filter(id=user_id).delete()
+                print(f'[INFO]ユーザーが削除されました。userid:{user_id}')
             else:
                 print(f'[INFO]指定の値ではないtargetが送信されました userid:{user_id}')
                 return JsonResponse({"error_mes":"targetが指定の値ではありません"})

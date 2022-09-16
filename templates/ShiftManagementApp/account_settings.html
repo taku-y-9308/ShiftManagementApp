@@ -6,6 +6,9 @@ ShiftManagementApp
 {% endblock %}
 
 {%block header%}
+<!--bootbox追加読み込み-->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootbox.js/4.4.0/bootbox.js" integrity="sha256-tcqPYPyxU+Fsv5sVdvnxLYJ7Jq9wWpi4twZbtZ0ubY8=" crossorigin="anonymous"></script>
+
 <script src="{% static 'ShiftManagementApp/account_settings.js'%}"></script>
 <script src="{% static 'ShiftManagementApp/valid_invalid_change.js'%}"></script>
 <script src="{%static 'ShiftManagementApp/loading.js'%}"></script>
@@ -20,6 +23,7 @@ ShiftManagementApp
             <th>デフォルトポジション</th>
             <th>登録状態</th>
             <th>シフト提出後編集モード</th>
+            <th>ユーザー削除</th>
         </tr>
     </thead>
     <tbody id="table_body"></tbody>
