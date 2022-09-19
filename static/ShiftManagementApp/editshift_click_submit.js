@@ -16,13 +16,13 @@ $(document).on('click','#submit-date',window.show_timeline =  function show_time
                     "date":$('#edit-date').val()
             })
             .then((res)=>{
-                /*
+                
                 if(res.data.length == 0){
                     const no_shift_alert = document.getElementById('no_shift_alert');
                     no_shift_alert.innerHTML = '<b>シフトが存在しないか、公開されていません</b>'
-                   $('#no_shift_alert').modal('show');
+                   //$('#no_shift_alert').modal('show');
                 }
-                */
+                
                 google.charts.load('current', {'packages':['timeline']});
                 google.charts.setOnLoadCallback(drawChart);
                 function drawChart() {
@@ -120,7 +120,7 @@ $(document).on('click','#submit-date',window.show_timeline =  function show_time
                         /*モーダル内の削除ボタンを押したときの動作*/
                         $('#delete-shift').click(function(){
                             axios
-                                .post("/edit-shift-Ajax/delete-shiftdata/",{
+                                .post("/edit-shift-Ajax/post-shiftdata/delete-shiftdata/",{
                                     "id":Number($('#shift_id').val()),//int型に変換
                                 })
                                 .then((res)=>{

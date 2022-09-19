@@ -390,9 +390,18 @@ def submitshift(request):
             
 
         #アーカイブテーブルに書き込む
+        #プライマリーキーには、メインテーブルと同一の物を使用する
+        """
+        #クライアントからid=Noneで送信されたら、新規シフト判定
+        if datas['id'] is None:
+            primary_key = None
+        else:
+            primary_key = product_of_main_table.id
+        """
+
         try:
             product_of_archive_table,created_of_archive_table = Shift_Archive.objects.update_or_create(
-            id = datas['id'],
+            id = product_of_main_table.id,
             defaults = {
                     'user':request.user,
                     'date':datas['date'],
@@ -597,10 +606,11 @@ def editshift_ajax_post_shiftdata(request):
         return HttpResponse('アクセス権がありません')
 
 '''
-削除リクエストの送信先
+個人画面からの削除リクエストの送信先
+メインテーブルとアーカイブテーブルから削除する
 '''
 @login_required
-def editshift_ajax_delete_shiftdata(request):
+def editshift_ajax_delete(request):
      #GETリクエストなら404を返す
     if request.method == 'GET':
         raise Http404()
@@ -608,8 +618,53 @@ def editshift_ajax_delete_shiftdata(request):
     delete_shift_id = datas['id']
     response = []
 
-    #削除リクエストが管理ユーザの場合、無条件で削除実施
+    """
+    削除リクエストの判定
+    編集可能期間もしくは、編集モードの時に削除リクエストを受け付ける
+    """
+    for_judge_date = f"{datas['date']}T{datas['start']}"
+    if (Judge_editable(for_judge_date) == True or request.user.is_edit_mode == True):
+        #getは対象が存在しないと例外を返すため念の為try文にしている
+        
+        #メインテーブルから削除
+        try:
+            Shift.objects.get(id=datas['id']).delete()
+            response.append({
+                'res_code':True
+            })
+            print(f'[INFO]メインテーブルのシフトが削除されました。 delete_shift_id:{delete_shift_id}')
+        except Exception as e:
+            print(f'[ERROR]メインテーブルのシフト削除に失敗しました。 reason:{e}')
+        
+        #アーカイブテーブルから削除
+        try:
+            Shift_Archive.objects.get(id=datas['id']).delete()
+            print(f'[INFO]アーカイブテーブルのシフトが削除されました。 delete_shift_id:{delete_shift_id}')
+        except Exception as e:
+            print(f'[ERROR]アーカイブテーブルのシフト削除に失敗しました。 reason:{e}')
+    else:
+        response.append({
+            'res_code':False
+        })
+        print(f'[INFO]編集可能期間外もしくは、編集モードでないためシフトを削除できませんでした. delete_shift_id:{delete_shift_id}')
+    return JsonResponse(response,safe=False)
+
+"""
+【管理者のみ】
+【シフト編集画面】
+シフト編集画面からの削除リクエスト
+メインテーブルのみ削除する
+"""
+def editshift_ajax_delete_shiftdata(request):
     if request.user.is_staff:
+        if request.method == 'GET':
+            raise Http404()
+
+        datas = json.loads(request.body)
+        delete_shift_id = datas['id']
+        response = []
+
+        #メインテーブルのみ削除
         try:
             Shift.objects.get(id=datas['id']).delete()
             response.append({
@@ -622,30 +677,11 @@ def editshift_ajax_delete_shiftdata(request):
             })
             print(f'[ERROR]シフト削除に失敗しました。 reason:{e}')
         return JsonResponse(response,safe=False)
-
-    #削除リクエストが一般ユーザーの場合、編集可能期間かどうかで可否を変える
+        
     else:
-        """
-        削除リクエストの判定
-        編集可能期間もしくは、編集モードの時に削除リクエストを受け付ける
-        """
-        for_judge_date = f"{datas['date']}T{datas['start']}"
-        if (Judge_editable(for_judge_date) == True or request.user.is_edit_mode == True):
-            #getは対象が存在しないと例外を返すため念の為try文にしている
-            try:
-                Shift.objects.get(id=datas['id']).delete()
-                response.append({
-                    'res_code':True
-                })
-                print(f'[INFO]シフトが削除されました。 delete_shift_id:{delete_shift_id}')
-            except Exception as e:
-                print(f'[ERROR]シフト削除に失敗しました。 reason:{e}')
-        else:
-            response.append({
-                'res_code':False
-            })
-            print(f'[INFO]編集可能期間外もしくは、編集モードでないためシフトを削除できませんでした. delete_shift_id:{delete_shift_id}')
-        return JsonResponse(response,safe=False)
+        print(f'[INFO]staffユーザーではないユーザーがシフト編集画面にアクセスしました。user_id:{request.user.id}')
+        return HttpResponse('アクセス権がありません')
+
 
 """
 シフトの公開設定
