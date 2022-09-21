@@ -14,7 +14,8 @@ function print_shift_lists(is_first_half_second_half){
 
     axios
         .post('/shift-list-ajax/',{
-            "selected_month": $('#selected_month').val()
+            "selected_month": $('#selected_month').val(),
+            "selected_table": true
         })
         .then((res)=>{
             console.log(res);
