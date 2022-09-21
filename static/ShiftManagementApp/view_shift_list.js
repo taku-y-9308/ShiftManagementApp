@@ -17,10 +17,18 @@ function view_shift_lists(){
     axios.defaults.xsrfHeaderName = "X-CSRFTOKEN"
     axios.defaults.xsrfCookieName = "csrftoken"
 
+    let selected_table = '';
+    
+    if($('#selected_table').val() == 'true'){
+        selected_table = true
+    }else if($('#selected_table').val() == 'false'){
+        selected_table = false
+    }
+
     axios
         .post('/shift-list-ajax/',{
             "selected_month": $('#selected_month').val(),
-            "selected_table": $('#selected_table').val()
+            "selected_table": selected_table
         })
         .then((res)=>{
             console.log(res);

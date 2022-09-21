@@ -762,15 +762,18 @@ def shift_list_ajax(request):
         res = json.loads(request.body)
         #print(res["selected_month"])
 
-        #文字列のboolをbool型に変換する
         #編集済みのシフト:True,提出時のシフト:False
-        if res['selected_table'] == 'True':
+        type_of_shift_table = res['selected_table']
+        """
+        if res['selected_table'] == 'true':
             type_of_shift_table = True
-        elif res['selected_table'] == 'False':
+        elif res['selected_table'] == 'false':
             type_of_shift_table = False
         else:
             type_of_shift_table = None
-        
+
+        """
+
         dt = datetime.datetime.strptime(res["selected_month"],'%Y-%m-%d')
         selected_month_beginning = dt
         selected_month_end = datetime.date(dt.year,dt.month+1,1) - datetime.timedelta(days=1)
