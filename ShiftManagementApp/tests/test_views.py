@@ -61,6 +61,7 @@ class AllpageTest(TestCase):
         response = self.client.get('/shift-list-print/')
         self.assertEqual(response.status_code,200)
 
+        #設定画面のHTMLだけテスト、アカウントデータは下で検証
         response = self.client.get('/account-setting/')
         self.assertEqual(response.status_code,200)
 
@@ -133,6 +134,67 @@ class Calendartest(TestCase):
         tz = datetime.timezone(datetime.timedelta(hours=0))
         self.assertEqual(shift[0].begin,datetime.datetime(2022, 7, 1, 3, 0, 0,tzinfo=tz))
         self.assertEqual(shift[0].finish,datetime.datetime(2022, 7, 1, 9, 0, 0,tzinfo=tz))
+
+class AccountSettingCheck(TestCase):
+    def setUp(self):
+        """テスト用管理ユーザを作成してログイン維持する"""
+        shop_id = 0
+        username = 'admin_testuser'
+        default_position = True
+        email = 'admin_testuser@mail.com'
+        password = 'admintestpassword'
+        is_edit_mode = True
+        is_active = True
+        is_staff = True
+
+        self.user = User.objects.create_user(
+            username,
+            email,
+            password,
+            shop_id=shop_id,
+            default_position=default_position,
+            is_edit_mode=is_edit_mode,
+            is_active=is_active,
+            is_staff=is_staff
+            )
+        #テスト用一般ユーザーを作成
+        self.user = User.objects.create_user(
+            'testuser',
+            'tesetuser@mail.com',
+            'testpassword',
+            shop_id=0,
+            default_position=False,
+            is_edit_mode=False,
+            is_active=True,
+            is_staff=False
+        )
+        
+        #管理ユーザーでログインする
+        self.client.login(email=email,password=password)
+
+    def test_account_settings(self):
+        """アカウント設定画面でアカウントデータが正しく返却されているか確認"""
+        response = self.client.post('/account-setting/',{},content_type='application/json')
+        user_info = json.loads(response.content)
+
+        #比較用正解JSONデータ
+        correct_json_data_account_settings = [
+            {
+                'user_id': 3,
+                'username': 'admin_testuser',
+                'default_position': True,
+                'is_active': True,
+                'is_edit_mode': True
+            },
+            {
+                'user_id': 4,
+                'username': 'testuser',
+                'default_position': False,
+                'is_active': True,
+                'is_edit_mode': False
+            }
+        ]
+        self.assertEqual(correct_json_data_account_settings,user_info)
 
     
 class ShiftListCheck(TestCase):
