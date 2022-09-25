@@ -12,6 +12,13 @@ class LoginpageTest(TestCase):
         response = self.client.get(reverse('ShiftManagementApp:Login'))
         self.assertEqual(response.status_code,200)
 
+class RedirectTest(TestCase):
+    def test_redirect(self):
+        """ログインせずにログイン必要なページにアクセスしたときにログインページにリダイレクトされるか"""
+        response = self.client.get('/home/')
+        self.assertRedirects(response,'/login/?next=/home/', status_code=302, target_status_code=200, msg_prefix='', fetch_redirect_response=True)
+
+
 class AllpageTest(TestCase):
     def setUp(self):
         """テストログイン用ユーザを作成してログイン維持する"""
@@ -122,7 +129,7 @@ class Calendartest(TestCase):
     def test_check_database_post_calendar(self):
         """DBにデータを送信して正常に格納されているか確認"""
         post_data = {
-            "id" : 1,
+            "id" : 2,
             "date":"2022-07-01",
             "start":"12:00",
             "end":"18:00",
