@@ -2,6 +2,7 @@ version: 2.1
 orbs: 
   heroku-container: pbrisbin/heroku-container@1.0.0
   aws-ecr: circleci/aws-ecr@8.1.2
+  cloudrun: circleci/gcp-cloud-run@x.y
 
 jobs: 
   test: 
@@ -24,6 +25,20 @@ jobs:
       - run: python manage.py migrate
       - run: python manage.py collectstatic --noinput
       - run: python3 manage.py test
+  build_and_deploy_cloud_run: 
+    docker:
+      - image: 'cimg/base:stable'
+    steps:
+      - checkout
+      - cloudrun/init
+      - cloudrun/build:
+          tag: 'us-central1-docker.pkg.dev/shiftmanagementapp-363812/shiftmanagementapp'
+      - cloudrun/deploy:
+          image: 'us-central1-docker.pkg.dev/shiftmanagementapp-363812/shiftmanagementapp'
+          platform: managed
+          region: us-east1
+          service-name: shiftmanagementapp
+          unauthenticated: true
 workflows: 
   test_and_build:
     jobs: 
@@ -45,4 +60,10 @@ workflows:
               only:
                 - main
           requires:
+            - test
+      - build_and_deploy_to_cloudrun: 
+          filters: 
+            branches: 
+             - main
+          requires: 
             - test
