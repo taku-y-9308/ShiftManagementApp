@@ -36,7 +36,7 @@ jobs:
       - cloudrun/build:
           tag: 'us-central1-docker.pkg.dev/shiftmanagementapp-363812/shiftmanagementapp'
       - cloudrun/deploy:
-          image: 'us-central1-docker.pkg.dev/shiftmanagementapp-363812/shiftmanagementapp'
+          image: 'us-central1-docker.pkg.dev/shiftmanagementapp-363812/shiftmanagementapp/app'
           platform: managed
           region: us-east1
           service-name: shiftmanagementapp
