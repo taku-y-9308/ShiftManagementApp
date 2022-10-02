@@ -43,17 +43,15 @@ heroku版: https://shiftmanagementapp-heroku.herokuapp.com
 - Docker 20.10.14
 - AWS
     - ECS,ECR,EC2,RDS,ELB,S3,SES,Route53
+- GCP
+    - CloudRun,CloudBuild,CloudSQL
 - heroku
+    - Heroku Postgres
 
 **その他**
 - CircleCI
     - mainブランチへマージすることで自動テストを実行
-    - 自動テストをパスすると、コンテナをビルドしてしてheroku,ECRへ自動デプロイを実行
+    - 自動テストをパスすると、コンテナをビルドしてしてheroku,AWS,GCPへ自動デプロイを実行
 - Progressive Web Apps(PWA)
 
-![ecs-構成図 drawio-3](https://user-images.githubusercontent.com/66234583/184472486-99bb3297-5cb6-48c3-b30a-f76edaadac48.svg)
-
-
-
-
-
+![ecs-構成図 drawio-4](https://user-images.githubusercontent.com/66234583/193442874-130cfb5c-ff3b-4281-bab3-c20df808c354.svg)
