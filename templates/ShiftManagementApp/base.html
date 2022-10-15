@@ -80,10 +80,15 @@
               <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">管理者メニュー</a>
                 <div class="dropdown-menu">
+                  <a class="dropdown-item" href="{% url 'ShiftManagementApp:general-settings'%}">一般設定</a>
                   <a class="dropdown-item" href="{% url 'ShiftManagementApp:account-setting'%}">アカウント設定</a>
                   <a class="dropdown-item" href="{% url 'ShiftManagementApp:shift-list'%}">シフト一覧</a>
                   <a class="dropdown-item" href="{% url 'ShiftManagementApp:shift-list-print'%}">シフト一覧(印刷用)</a>
                 </div>
+              </li>
+              {% else %}
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'ShiftManagementApp:general-settings'%}">設定</a>
               </li>
               {%endif%}
                 <li class="nav-item">

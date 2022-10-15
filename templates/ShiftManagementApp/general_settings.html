@@ -1,0 +1,133 @@
+{% extends "ShiftManagementApp/base.html" %}
+{% load static %}
+
+{% block title %}
+ShiftManagementApp
+{% endblock %}
+
+{%block header%}
+<!--bootbox追加読み込み-->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootbox.js/4.4.0/bootbox.js" integrity="sha256-tcqPYPyxU+Fsv5sVdvnxLYJ7Jq9wWpi4twZbtZ0ubY8=" crossorigin="anonymous"></script>
+
+<script src="{% static 'ShiftManagementApp/general_settings.js'%}"></script>
+<script src="{% static 'ShiftManagementApp/valid_invalid_change.js'%}"></script>
+<script src="{%static 'ShiftManagementApp/loading.js'%}"></script>
+{%endblock%}
+
+{% block contents%}
+
+<div class="card">
+    <h3 class="card-header">一般設定</h3>
+    <div class="card-body">
+        <div class="form-group">
+          <label for="formGroupExampleInput">ショップID</label>
+          <input type="number" class="form-control" id="shop_id" readonly>
+        </div>
+        <div class="form-group">
+          <label for="formGroupExampleInput">ユーザー名</label>
+          <img src="/static/ShiftManagementApp/pencil.svg" width="15px" class="ml-2" onclick="change_username();">
+          <input type="text" class="form-control" id="username"  readonly>
+        </div>
+        <div class="form-group">
+          <label for="formGroupExampleInput">メールアドレス</label>
+          <img src="/static/ShiftManagementApp/pencil.svg" width="15px" class="ml-2" onclick="change_email();">
+          <input type="email" class="form-control" id="email" readonly>
+        </div>
+    </div>
+</div>
+
+{% if user.is_staff %}
+<div class="card mt-5">
+  <h3 class="card-header">店舗設定</h3>
+  <div class="card-body">
+      <div class="form-group">
+        <label for="formGroupExampleInput">シフト締め切り日</label>
+        <img src="/static/ShiftManagementApp/pencil.svg" width="15px" class="ml-2" onclick="change_deadline();">
+        <p>※1日から指定した日までがシフト提出可能日になります </p>
+        <input type="text" class="form-control" id="deadline" readonly>
+      </div>
+  </div>
+</div>
+{% endif %}
+
+
+<div class="modal fade" id="account_disable_warning" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-body">
+        対象のユーザーはログイン権限がなくなったためログインできなくなります。
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">閉じる</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ユーザー名変更モーダル -->
+<div class="modal fade" id="change_username" tabindex="-1" role="dialog" aria-labelledby="basicModal" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+          <div class="modal-body">
+              <label class="h6">新しいユーザー名を入力してください</label>
+              <input type="text" class="form-control" id="modified_username">
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">閉じる</button>
+            <button type="button" class="btn btn-danger" type="submit" id="submit_modified_username">変更</button>
+          </div>
+          </div>
+      </div>
+  </div>
+
+<!-- メールアドレス変更モーダル -->
+<div class="modal fade" id="change_email" tabindex="-1" role="dialog" aria-labelledby="basicModal" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+          <div class="modal-body">
+              <label class="h6">新しいメールアドレスを入力してください</label>
+              <p>パスワードを忘れた時に使うため確実に受け取れるアドレスにしてください</p>
+              <input type="text" class="form-control" id="modified_email">
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">閉じる</button>
+            <button type="button" class="btn btn-danger" type="submit" id="submit_modified_email">変更</button>
+          </div>
+          </div>
+      </div>
+  </div>
+
+{% if user.is_staff %}
+<!-- シフト提出締め切り変更モーダル -->
+<div class="modal fade" id="change_deadline" tabindex="-1" role="dialog" aria-labelledby="basicModal" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+          <div class="modal-body">
+              <label>新しいシフト締切日を入力してください</label>
+              <select class="form-select form-control" aria-label="Default select" id="modified_deadline">
+                <option value="20">20日</option>
+                <option value="25">25日</option>
+              </select>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">閉じる</button>
+            <button type="button" class="btn btn-danger" type="submit" id="submit_modified_deadline">変更</button>
+          </div>
+          </div>
+      </div>
+  </div>
+{% endif %}
+
+<div class="modal fade" id="successful_modification_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-body">
+        修正完了しました
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">閉じる</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
