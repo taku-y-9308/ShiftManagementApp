@@ -472,7 +472,7 @@ def Judge_editable(shop_id,date_str):
         }
     )
 
-    # 2022-04-05が与えられたら2022-04-01~2022-04-20に変換
+    # deadlineが20の場合、2022-04-05が与えられたら2022-04-01~2022-04-20に変換
     #すべての時刻をタイムゾーンをJSTにする
     start_date = datetime.datetime(date.year,date.month-1,date.replace(day=1).day,tzinfo=JST)
     end_date = datetime.datetime(date.year,date.month-1,deadline.deadline,tzinfo=JST)
