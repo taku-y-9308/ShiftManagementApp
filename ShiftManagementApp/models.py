@@ -119,3 +119,9 @@ class Publish_range(models.Model):
     Publish_shift_end = models.DateField("Publish_shift_end")
     def __str__(self):
         return f"{self.Publish_shift_start}~{self.Publish_shift_end}"
+
+class Deadline(models.Model):
+    shop_id = models.IntegerField("shop_id")
+    deadline = models.IntegerField("deadline")
+    def __int__(self):
+        return self.shop_id

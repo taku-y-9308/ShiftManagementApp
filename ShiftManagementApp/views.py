@@ -12,7 +12,7 @@ from tracemalloc import start
 from urllib import response
 from xmlrpc.client import boolean
 from django.views import generic
-from ShiftManagementApp.models import User,Shift,Shift_Archive,LINE_USER_ID,Publish_range
+from ShiftManagementApp.models import User,Shift,Shift_Archive,LINE_USER_ID,Publish_range,Deadline
 from ShiftManagementApp.form import SubmitShift,SignUpForm,CreateAccount,ContactForm
 from django.urls import reverse,reverse_lazy
 from django.shortcuts import get_object_or_404, render,redirect
@@ -358,7 +358,7 @@ def submitshift(request):
     """
     編集可能期間または編集モードのときにシフトを編集できる
     """
-    if (Judge_editable(start_str) == True or request.user.is_edit_mode == True):
+    if (Judge_editable(request.user.shop_id,start_str) == True or request.user.is_edit_mode == True):
         print("[INFO]編集可能なシフトです")
 
         '''
@@ -446,10 +446,11 @@ def submitshift(request):
 
 
 '''
-シフト提出可能期間かを判定
+所属するshop_idと判定したい日付を入れると、シフト提出可能期間かを判定
 date_str :YYYY-mm-ddTHH:MM
+shop_id: 1
 '''
-def Judge_editable(date_str):
+def Judge_editable(shop_id,date_str):
     '''
     TimeZone:JST で統一
     '''
@@ -462,10 +463,19 @@ def Judge_editable(date_str):
     #引数の日付をDate型に変換
     date = datetime.datetime.strptime(date_str+':00+0900','%Y-%m-%dT%H:%M:%S%z')
 
+    #shop_idから締切日を判定する
+    #締切日未設定のshopの場合はデフォルトの20日をセットする
+    deadline, created = Deadline.objects.get_or_create(
+        shop_id = shop_id,
+        defaults = {
+            'deadline': 20
+        }
+    )
+
     # 2022-04-05が与えられたら2022-04-01~2022-04-20に変換
     #すべての時刻をタイムゾーンをJSTにする
     start_date = datetime.datetime(date.year,date.month-1,date.replace(day=1).day,tzinfo=JST)
-    end_date = datetime.datetime(date.year,date.month-1,20,tzinfo=JST)
+    end_date = datetime.datetime(date.year,date.month-1,deadline.deadline,tzinfo=JST)
     #与えられた日付が編集可能な時期がを判定
     if start_date<dt_JST<end_date:
         return True
@@ -623,7 +633,7 @@ def editshift_ajax_delete(request):
     編集可能期間もしくは、編集モードの時に削除リクエストを受け付ける
     """
     for_judge_date = f"{datas['date']}T{datas['start']}"
-    if (Judge_editable(for_judge_date) == True or request.user.is_edit_mode == True):
+    if (Judge_editable(request.user.shop_id,for_judge_date) == True or request.user.is_edit_mode == True):
         #getは対象が存在しないと例外を返すため念の為try文にしている
         
         #メインテーブルから削除
@@ -846,6 +856,66 @@ def shift_list_print(request):
     else:
         print(f'staffユーザーではないユーザーによるアクセスがありました。 user_id:{request.user.id}')
         return HttpResponse('アクセス権がありません')
+
+"""
+設定画面
+"""
+@login_required
+def general_settings(request):
+    if request.method == 'GET':
+        return render(request,'ShiftManagementApp/general_settings.html')
+    else:
+        posted_data = json.loads(request.body)
+        res_data = {}
+        
+        #設定画面が読み込まれた時に返す
+        if posted_data['post_data_type'] == None:
+            if request.user.is_staff:
+                user = User.objects.filter(id=request.user.id)[0]
+                deadline, created = Deadline.objects.get_or_create(
+                    shop_id = user.shop_id,
+                    defaults = {
+                        'deadline': 20
+                    }
+                )
+                res_data = {
+                    'shop_id': user.shop_id,
+                    'username': user.username,
+                    'email': user.email,
+                    'deadline': deadline.deadline
+                }
+            else:
+                user = User.objects.filter(id=request.user.id)[0]
+                res_data = {
+                    'shop_id': user.shop_id,
+                    'username': user.username,
+                    'email': user.email
+                }
+            res_data['res_code'] = 0
+        elif posted_data['post_data_type'] == 'modified_username':
+            try:
+                User.objects.filter(id=request.user.id).update(username=posted_data['modified_username'])
+                res_code=0
+            except:
+                res_code=1
+            res_data['res_code'] = res_code
+        elif posted_data['post_data_type'] == 'modified_email':
+            try:
+                User.objects.filter(id=request.user.id).update(email=posted_data['modified_email'])
+                res_code=0
+            except:
+                res_code=1
+            res_data['res_code'] = res_code
+        elif posted_data['post_data_type'] == 'modified_deadline':
+            try:
+                Deadline.objects.filter(shop_id=request.user.shop_id).update(deadline=posted_data['modified_deadline'])
+                res_code=0
+            except:
+                res_code=1
+            res_data['res_code'] = res_code   
+    return JsonResponse(res_data)
+            
+
 
 """
 アカウント設定画面

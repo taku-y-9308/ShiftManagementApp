@@ -24,6 +24,7 @@ urlpatterns = [
     path('shift-list-ajax/',views.shift_list_ajax,name='shift-list-ajax'),
     path('shift-list-print/',views.shift_list_print,name='shift-list-print'),
     path('account-setting/',views.account_setting,name='account-setting'),
+    path('general-settings/',views.general_settings,name='general-settings'),
     path('valid-invalid-change/',views.valid_invalid_change,name='valid-invalid-change'),
     path('password_reset/', views.PasswordReset.as_view(), name='password_reset'), 
     path('password_reset/done/', views.PasswordResetDone.as_view(), name='password_reset_done'), 
