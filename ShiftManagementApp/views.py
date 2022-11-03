@@ -786,7 +786,11 @@ def shift_list_ajax(request):
 
         dt = datetime.datetime.strptime(res["selected_month"],'%Y-%m-%d')
         selected_month_beginning = dt
-        selected_month_end = datetime.date(dt.year,dt.month+1,1) - datetime.timedelta(days=1)
+
+        if dt.month == 12:
+            selected_month_end = datetime.date(dt.year+1,1,1) - datetime.timedelta(days=1)
+        else:
+            selected_month_end = datetime.date(dt.year,dt.month+1,1) - datetime.timedelta(days=1)
 
         selected_month_beginning_str = selected_month_beginning.strftime('%Y-%m-%d')
         selected_month_end_str = selected_month_end.strftime('%Y-%m-%d')
