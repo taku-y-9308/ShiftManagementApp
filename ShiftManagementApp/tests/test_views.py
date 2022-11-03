@@ -3,6 +3,7 @@ from lib2to3.pgen2.tokenize import tokenize
 from urllib import response
 from django.test import TestCase
 from django.urls import reverse, resolve
+from dateutil.relativedelta import relativedelta
 from ShiftManagementApp.views import home
 from ShiftManagementApp.models import User,UserManager,Shift
 
@@ -228,6 +229,20 @@ class ShiftListCheck(TestCase):
             )
 
         self.client.login(email=email,password=password)
+
+    def test_all_month_check(self):
+        """12ヶ月分リクエストした時のレスポンスコードが200であることを確認"""
+        tz = datetime.timezone(datetime.timedelta(hours=9))
+        today = datetime.datetime.now(tz)
+        for i in range(12):
+            selected_month = today + relativedelta(months=i)
+            post_data = {
+            "selected_table": False,
+            "selected_month": selected_month.strftime('%Y-%m-%d')
+            }
+            print(post_data)
+        response = self.client.post('/shift-list-ajax/',post_data,content_type='application/json')
+        self.assertEqual(response.status_code,200)
     
     def test_shift_list(self):
         """シフトをDBに登録してシフトリスト用JSONが正常に返却されるかテスト"""
