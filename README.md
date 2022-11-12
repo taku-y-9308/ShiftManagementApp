@@ -1,8 +1,8 @@
 [![CircleCI](https://dl.circleci.com/status-badge/img/gh/taku-y-9308/ShiftManagementApp/tree/main.svg?style=svg)](https://dl.circleci.com/status-badge/redirect/gh/taku-y-9308/ShiftManagementApp/tree/main)  
 # 概要
 シフト提出、編集、閲覧をスマホから簡単に行えるWebアプリです。  
-AWS版とheroku版を提供しております。  
-AWS版: https://shiftmanagementapp.com  
+AWS版,heroku版,Google Cloud版を提供しております。(AWS版は現在停止中)  
+Google Cloud(CloudRun)版: https://shiftmanagementapp.com  
 ID: test@mail.com  
 PASS: testuser  
   
@@ -51,7 +51,7 @@ heroku版: https://shiftmanagementapp-heroku.herokuapp.com
 **その他**
 - CircleCI
     - mainブランチへマージすることで自動テストを実行
-    - 自動テストをパスすると、コンテナをビルドしてしてheroku,AWS,GCPへ自動デプロイを実行
+    - 自動テストをパスすると、コンテナをビルドしてしてheroku,AWS,Google Cloudへ自動デプロイを実行
 - Progressive Web Apps(PWA)
 
 ![ecs-構成図 drawio-4](https://user-images.githubusercontent.com/66234583/193442874-130cfb5c-ff3b-4281-bab3-c20df808c354.svg)
