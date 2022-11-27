@@ -11,3 +11,4 @@ services:
       - PORT
       - SECRET_KEY
       - DATABASE_URL
+      - EMAIL_HOST_PASSWORD

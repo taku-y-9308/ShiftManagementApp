@@ -1021,6 +1021,7 @@ def account_linkage(request):
 パスワードリセット
 """
 class PasswordReset(PasswordResetView):
+    email_template_name = "ShiftManagementApp/password_reset_email.html"
     template_name = 'ShiftManagementApp/password_reset_form.html'
     success_url = reverse_lazy('ShiftManagementApp:password_reset_done')
 
