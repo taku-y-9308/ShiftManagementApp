@@ -9,3 +9,5 @@ services:
     tty: true
     environment: 
       - PORT
+      - SECRET_KEY
+      - DATABASE_URL
