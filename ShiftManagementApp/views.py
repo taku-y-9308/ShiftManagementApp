@@ -472,11 +472,15 @@ def Judge_editable(shop_id,date_str):
         }
     )
 
-    # deadlineが20の場合、2022-04-05が与えられたら2022-04-01~2022-04-20に変換
-    #すべての時刻をタイムゾーンをJSTにする
-    start_date = datetime.datetime(date.year,date.month-1,date.replace(day=1).day,tzinfo=JST)
-    end_date = datetime.datetime(date.year,date.month-1,deadline.deadline,tzinfo=JST)
-    #与えられた日付が編集可能な時期がを判定
+    # シフト提出可能日を算出する
+    # deadlineが20の場合、2022-04-05が与えられたら2022-03-01~2022-03-20が提出可能日になる
+    if date.month == 1:
+        start_date = datetime.datetime(date.year-1,12,date.replace(day=1).day,tzinfo=JST)
+        end_date = datetime.datetime(date.year-1,12,deadline.deadline,tzinfo=JST)
+    else:
+        start_date = datetime.datetime(date.year,date.month-1,date.replace(day=1).day,tzinfo=JST)
+        end_date = datetime.datetime(date.year,date.month-1,deadline.deadline,tzinfo=JST)
+
     if start_date<dt_JST<end_date:
         return True
     else:
