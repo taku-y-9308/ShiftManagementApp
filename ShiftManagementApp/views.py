@@ -472,11 +472,15 @@ def Judge_editable(shop_id,date_str):
         }
     )
 
-    # deadlineが20の場合、2022-04-05が与えられたら2022-04-01~2022-04-20に変換
-    #すべての時刻をタイムゾーンをJSTにする
-    start_date = datetime.datetime(date.year,date.month-1,date.replace(day=1).day,tzinfo=JST)
-    end_date = datetime.datetime(date.year,date.month-1,deadline.deadline,tzinfo=JST)
-    #与えられた日付が編集可能な時期がを判定
+    # シフト提出可能日を算出する
+    # deadlineが20の場合、2022-04-05が与えられたら2022-03-01~2022-03-20が提出可能日になる
+    if date.month == 1:
+        start_date = datetime.datetime(date.year-1,12,date.replace(day=1).day,tzinfo=JST)
+        end_date = datetime.datetime(date.year-1,12,deadline.deadline,tzinfo=JST)
+    else:
+        start_date = datetime.datetime(date.year,date.month-1,date.replace(day=1).day,tzinfo=JST)
+        end_date = datetime.datetime(date.year,date.month-1,deadline.deadline,tzinfo=JST)
+
     if start_date<dt_JST<end_date:
         return True
     else:
@@ -743,9 +747,19 @@ def edit_shift_publish_shift(request):
 def shift_list(request):
     if request.user.is_staff:
         now = datetime.datetime.now()
-        last_month = datetime.date(now.year,now.month-1,1)
         this_month = datetime.date(now.year,now.month,1)
-        next_month = datetime.date(now.year,now.month+1,1)
+
+        # 1月と12月は別処理にする
+        if now.month == 1:
+            last_month = datetime.date(now.year-1,12,1)
+            next_month = datetime.date(now.year,now.month+1,1)
+        elif now.month == 12:
+            last_month = datetime.date(now.year,now.month-1,1)
+            next_month = datetime.date(now.year+1,1,1)
+        else:
+            last_month = datetime.date(now.year,now.month-1,1)
+            next_month = datetime.date(now.year,now.month+1,1)
+
         params= {
             'last_month_for_value': last_month.strftime('%Y-%m-%d'),
             'this_month_for_value': this_month.strftime('%Y-%m-%d'),
