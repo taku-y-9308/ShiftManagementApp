@@ -743,9 +743,19 @@ def edit_shift_publish_shift(request):
 def shift_list(request):
     if request.user.is_staff:
         now = datetime.datetime.now()
-        last_month = datetime.date(now.year,now.month-1,1)
         this_month = datetime.date(now.year,now.month,1)
-        next_month = datetime.date(now.year,now.month+1,1)
+
+        # 1月と12月は別処理にする
+        if now.month == 1:
+            last_month = datetime.date(now.year-1,12,1)
+            next_month = datetime.date(now.year,now.month+1,1)
+        elif now.month == 12:
+            last_month = datetime.date(now.year,now.month-1,1)
+            next_month = datetime.date(now.year+1,1,1)
+        else:
+            last_month = datetime.date(now.year,now.month-1,1)
+            next_month = datetime.date(now.year,now.month+1,1)
+
         params= {
             'last_month_for_value': last_month.strftime('%Y-%m-%d'),
             'this_month_for_value': this_month.strftime('%Y-%m-%d'),
