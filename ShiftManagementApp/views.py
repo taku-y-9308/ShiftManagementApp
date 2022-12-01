@@ -178,6 +178,8 @@ def submit_shift(request):
     else:
         start_date = get_first_date(now_JST,1)
         end_date = get_last_date(now_JST,1) + datetime.timedelta(days=1) #FullCalendarはUTCで認識されてしまうため
+    print(f"start_date:{start_date}")
+    print(f"end_date:{end_date}")
     params = {
         'shift':arr2,
         'User':request.user,
@@ -204,11 +206,25 @@ defalut=0
 def get_first_date(dt,target_month=0):
     if not -1 <= target_month <= 1:
         raise ValueError("target_monthは-1~1の範囲である必要があります")
-
-    if dt.month+target_month < 1:
-        return dt.replace(year=dt.year-1,month=12,day=1)
-    elif dt.month+target_month > 12:
-        return dt.replace(year=dt.year+1,month=1,day=1)
+    
+    if dt.month == 1:
+        if target_month == -1:
+            return datetime.date(dt.year-1,12,1)
+        elif target_month == 0:
+            return datetime.date(dt.year,1,1)
+        elif target_month == 1:
+            return datetime.date(dt.year,2,1)
+        else:
+            pass
+    elif dt.month == 12:
+        if target_month == -1:
+            return datetime.date(dt.year,11,1)
+        elif target_month == 0:
+            return datetime.date(dt.year,12,1)
+        elif target_month == 1:
+            return datetime.date(dt.year+1,1,1)
+        else:
+            pass
     else:
         return dt.replace(month=dt.month+target_month,day=1)
 
@@ -230,10 +246,24 @@ def get_last_date(dt,target_month=0):
     if not -1 <= target_month <= 1:
         raise ValueError("target_monthは-1~1の範囲である必要があります")
 
-    if dt.month+target_month < 1:
-        return dt.replace(month=12,day=calendar.monthrange(dt.year-1,12)[1])
-    elif dt.month+target_month > 12:
-        return dt.replace(month=1,day=calendar.monthrange(dt.year+1,1)[1])
+    if dt.month == 1:
+        if target_month == -1:
+            return datetime.date(dt.year-1,12,31)
+        elif target_month == 0:
+            return datetime.date(dt.year,1,31)
+        elif target_month == 1:
+            return dt.replace(month=2,day=calendar.monthrange(dt.year,2)[1])
+        else:
+            pass
+    elif dt.month == 12:
+        if target_month == -1:
+            return datetime.date(dt.year,11,30)
+        elif target_month == 0:
+            return datetime.date(dt.year,12,31)
+        elif target_month == 1:
+            return datetime.date(dt.year+1,1,31)
+        else:
+            pass
     else:
         return dt.replace(month=dt.month+target_month,day=calendar.monthrange(dt.year,dt.month+target_month)[1])
 
