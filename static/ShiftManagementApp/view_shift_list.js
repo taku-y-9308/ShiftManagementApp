@@ -40,7 +40,7 @@ function view_shift_lists(){
             console.log(dt_last_date)
 
             let th_date_field_header = document.createElement('th');
-            th_date_field_header.innerHTML = "#";
+            th_date_field_header.innerHTML = "#########";
             thead_tr.appendChild(th_date_field_header);
             th_date_field_header.classList.add('fixed01');
             const dayOfWeekStr = [ "日", "月", "火", "水", "木", "金", "土" ]
