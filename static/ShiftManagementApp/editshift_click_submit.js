@@ -91,6 +91,16 @@ $(document).on('click','#submit-date',window.show_timeline =  function show_time
                         /*モーダル内の送信ボタンを押したときの動作*/
                         $('#submit-shift').click(function(){
                             dispLoading('Loading...');
+                            
+                            const start = new Date(`${$('#edit-date').val()}T${$('#start').val()}:00.000+09:00`);
+                            const end = new Date(`${$('#edit-date').val()}T${$('#end').val()}:00.000+09:00`);
+
+                            // バリデーション
+                            if (start > end){
+                                removeLoading();
+                                alert("終了時刻は開始時刻より後である必要があります");
+                                return;
+                            }
                             axios
                                 .post("/edit-shift-Ajax/post-shiftdata/",{
                                     "id":Number($('#shift_id').val()),//int型に変換
