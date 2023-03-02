@@ -385,6 +385,16 @@ def submitshift(request):
     #print(f"start_str:{start_str},start:{start},type(start):{type(start)}")
     end_str = f"{datas['date']}T{datas['end']}"
     end = datetime.datetime.strptime(end_str,'%Y-%m-%dT%H:%M')
+
+
+    # バリデーション
+    if start > end:
+        response = HttpResponse()
+        message = '終了時刻は開始時刻より後ろである必要があります'
+        response.status_code = 400
+        response.content = message
+        return response
+    
     """
     編集可能期間または編集モードのときにシフトを編集できる
     """
