@@ -61,59 +61,59 @@ document.addEventListener('DOMContentLoaded', function draw_calender() {
           /*送信ボタン押下時*/
           $('#submit').off('click') //offでクリックイベントを削除することで複数登録を防ぐ
           $('#submit').click(function(){
-              //イベント追加する時使うためidは保持しておく
-              let shift_id = info.event.id;
-              axios
-                  .post("/SubmitShift-Ajax/",{
-                      'date':$('#date').val(),
-                      'start':$('#start').val(),
-                      'end':$('#end').val(),
-                      'id':shift_id
-                  })
-                  .then((res)=>{
-  
-                      if(res.data[0]['res_code']==true){
-                          console.log(typeof(res.data));
-                          //calendar.getEventSources().remove();
-                          $('#testModal').modal('hide'); //modalを閉じる
-                          //新しいeventDataを取得
-                          eventData = res.data
-                          alert("送信されました")
-                      }else{
-                        if (res.data[0]['error_code']==1){
-                            console.log("error_code:1");
-                            alert("データベースの更新に失敗しました。再送してください。")
-                        }else if(res.data[0]['error_code']==2){
-                              console.log("error_code:2")
-                              alert("編集可能期間外のため編集できません");
-                        }else{
-                              alert("何らかの理由により送信失敗しました。error_code:else");
-                        }
-                      }
-                      
-                  })
-                  .catch(()=>{
-                      alert("送信失敗しました。再読み込みしてください");
-                  })
-                  let event = calendar.getEventById($('#shift_id').val())
-                  event.remove();
-                  console.log(typeof 42)
-                  calendar.addEvent({
-                  id : shift_id,
-                  start : $('#date').val()+"T"+$('#start').val(),
-                  end : $('#date').val()+"T"+$('#end').val(),
-                  borderColor : '#ff0000',
-                  })
-                  calendar.render();
-                  /*
-                  calendar.addEvent({
-                  id : $('#shift_id').val(),
-                  start : $('#start').val(),
-                  end : $('#end').val(),
-                  borderColor : '#ff0000',
-              });
-              */
-              
+
+            const start = new Date(`${$('#date').val()}T${$('#start').val()}:00.000+09:00`);
+            const end = new Date(`${$('#date').val()}T${$('#end').val()}:00.000+09:00`);
+
+            // バリデーション
+            if (start > end){
+                alert("終了時刻は開始時刻より後である必要があります");
+                return;
+            }
+            //イベント追加する時使うためidは保持しておく
+            let shift_id = info.event.id;
+            axios
+                .post("/SubmitShift-Ajax/",{
+                    'date':$('#date').val(),
+                    'start':$('#start').val(),
+                    'end':$('#end').val(),
+                    'id':shift_id
+                })
+                .then((res)=>{
+
+                    if(res.data[0]['res_code']==true){
+                        console.log(typeof(res.data));
+                        //calendar.getEventSources().remove();
+                        $('#testModal').modal('hide'); //modalを閉じる
+                        //新しいeventDataを取得
+                        eventData = res.data
+                        alert("送信されました")
+                    }else{
+                    if (res.data[0]['error_code']==1){
+                        console.log("error_code:1");
+                        alert("データベースの更新に失敗しました。再送してください。")
+                    }else if(res.data[0]['error_code']==2){
+                            console.log("error_code:2")
+                            alert("編集可能期間外のため編集できません");
+                    }else{
+                            alert("何らかの理由により送信失敗しました。error_code:else");
+                    }
+                    }
+                    
+                })
+                .catch(()=>{
+                    alert("送信失敗しました。再読み込みしてください");
+                })
+                let event = calendar.getEventById($('#shift_id').val())
+                event.remove();
+                console.log(typeof 42)
+                calendar.addEvent({
+                id : shift_id,
+                start : $('#date').val()+"T"+$('#start').val(),
+                end : $('#date').val()+"T"+$('#end').val(),
+                borderColor : '#ff0000',
+                })
+                calendar.render();              
           /*削除ボタン押下時*/
           })
           $('#delete-shift').off('click');

@@ -9,6 +9,15 @@ $(document).on('click','#create-newshift',function () {
     $('#submit-newshift-modal').modal('show');
     $('#submit-newshift').off('click');
     $('#submit-newshift').click(function(){
+
+        const start = new Date(`${$('#submit-newshift-date').val()}T${$('#submit-newshift-start').val()}:00.000+09:00`);
+        const end = new Date(`${$('#submit-newshift-date').val()}T${$('#submit-newshift-end').val()}:00.000+09:00`);
+
+        // バリデーション
+        if (start > end){
+            alert("終了時刻は開始時刻より後である必要があります");
+            return;
+        }
         let member = document.getElementById('submit-newshift-member').value;
         console.log(member);
         axios
