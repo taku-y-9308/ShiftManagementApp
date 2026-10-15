@@ -1,6 +1,4 @@
 import datetime,json
-from lib2to3.pgen2.tokenize import tokenize
-from urllib import response
 from django.test import TestCase
 from django.urls import reverse, resolve
 from dateutil.relativedelta import relativedelta
@@ -359,3 +357,24 @@ class ShiftListCheck(TestCase):
 
         #提出時のシフトは、削除実行しても変化がないことを確認
         self.assertEqual(correct_json_data_edited_shifts,res_of_unedited_shifts_json)
+
+class SignUpTest(TestCase):
+    def test_signup_same_username(self):
+        """usernameは姓のため重複を許容する。既存ユーザーと同じusernameでも新規アカウントを作成できるか"""
+        User.objects.create_user(
+            '山田',
+            'yamada1@mail.com',
+            'testpassword',
+            shop_id=0,
+            default_position=False,
+        )
+        response = self.client.post('/create-newaccount/',{
+            'email':'yamada2@mail.com',
+            'username':'山田',
+            'password1':'signuptestpassword',
+            'password2':'signuptestpassword',
+            'shop_id':1,
+            'default_position':True,
+        })
+        self.assertRedirects(response,'/login/', status_code=302, target_status_code=200)
+        self.assertEqual(User.objects.filter(username='山田').count(),2)

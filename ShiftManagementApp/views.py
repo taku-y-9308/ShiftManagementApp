@@ -1,16 +1,5 @@
-from cmath import log
 import json,datetime,secrets,calendar,logging,pytz
-from sre_constants import SUCCESS
 import re
-from asyncio import events
-from curses import reset_prog_mode
-from email.policy import default
-from pickletools import read_unicodestring8
-from re import A, template
-from this import d
-from tracemalloc import start
-from urllib import response
-from xmlrpc.client import boolean
 from django.views import generic
 from ShiftManagementApp.models import User,Shift,Shift_Archive,LINE_USER_ID,Publish_range,Deadline
 from ShiftManagementApp.form import SubmitShift,SignUpForm,CreateAccount,ContactForm
