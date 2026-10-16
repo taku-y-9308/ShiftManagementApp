@@ -9,8 +9,8 @@ orbs:
 jobs: 
   test: 
     docker: 
-      - image: python:3.9.13
-      - image: circleci/postgres
+      - image: python:3.14.8
+      - image: cimg/postgres:14.24
         environment: 
           POSTGRES_DB: dtvn6smssuuna
           POSTGRES_USER: postgres

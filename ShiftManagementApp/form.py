@@ -2,7 +2,7 @@
 from django.forms import ModelForm,Textarea
 from django import forms
 from ShiftManagementApp.models import Shift,User,Contact
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import BaseUserCreationForm
 
 class SubmitShift(ModelForm):
     class Meta:
@@ -56,7 +56,9 @@ class CreateAccount(forms.Form):
         'class':'form-control'
     }))
 
-class SignUpForm(UserCreationForm):
+#Django 4.2以降のUserCreationFormはusernameの重複(大文字小文字を区別しない)を拒否するため、
+#usernameに姓を入れて重複を許容しているこのアプリではBaseUserCreationFormを継承する
+class SignUpForm(BaseUserCreationForm):
     email = forms.EmailField(label='メールアドレス',widget=forms.TextInput(attrs={
         'placeholder':'example@mail.com',
         'class':'form-control'

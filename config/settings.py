@@ -38,7 +38,12 @@ LOGGING = {
 
 
 ALLOWED_HOSTS = ['127.0.0.1', '.herokuapp.com','shiftmanagementapp.com','localhost','gunicorn-django']
-CSRF_TRUSTED_ORIGINS= ['shiftmanagementapp.com']
+# Django 4.0以降はスキーム(https://)付きで指定する必要がある
+CSRF_TRUSTED_ORIGINS= ['https://shiftmanagementapp.com']
+
+# Cloud Run等のロードバランサでTLS終端されるため、X-Forwarded-ProtoでHTTPSリクエストを判定する
+# (Django 4.0以降のCSRFのOriginチェックで、https://のOriginとリクエストのスキームを一致させるため)
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 #Email settings
 #AWS_ACCESS_KEY_ID = ""
@@ -145,8 +150,6 @@ TIME_ZONE = 'Asia/Tokyo'
 
 USE_I18N = True
 
-USE_L10N = True
-
 USE_TZ = True
 
 
@@ -174,7 +177,16 @@ except ImportError:
 if not DEBUG:
     SECRET_KEY = os.environ.get('SECRET_KEY')
 
-    #heroku用の設定なので、PLATFORMが明示的にAWSとわかっている時は実行しない
+    #PLATFORMが明示的にAWSとわかっている時以外(Cloud Run)の設定
+    #(メンテナンスが終了したdjango-herokuの django_heroku.settings(locals(),databases=False) が行っていた設定を移植)
     if os.environ.get('PLATFORM') != 'AWS':
-        import django_heroku
-        django_heroku.settings(locals(),databases=False)
+        ALLOWED_HOSTS = ['*']
+        STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+        STORAGES = {
+            'default': {
+                'BACKEND': 'django.core.files.storage.FileSystemStorage',
+            },
+            'staticfiles': {
+                'BACKEND': 'whitenoise.storage.CompressedManifestStaticFilesStorage',
+            },
+        }
